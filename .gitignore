@@ -44,3 +44,6 @@ GetHub.app/
 build.command
 src/Properties/launchSettings.json
 build/
+
+GetHub_Dist/
+GetHub_Dist_*.zip
