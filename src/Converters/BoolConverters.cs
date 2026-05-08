@@ -1,9 +1,9 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
 
-namespace SourceGit.Converters
+namespace GetHub.Converters
 {
     public static class BoolConverters
     {

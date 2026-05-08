@@ -3,7 +3,7 @@ using System.Reflection;
 
 using Avalonia.Interactivity;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public partial class About : ChromelessWindow
     {
@@ -46,19 +46,19 @@ namespace SourceGit.Views
 
         private void OnVisitReleaseNotes(object _, RoutedEventArgs e)
         {
-            Native.OS.OpenBrowser($"https://github.com/sourcegit-scm/sourcegit/releases/tag/v{TxtVersion.Text}");
+            Native.OS.OpenBrowser($"https://github.com/gethub-scm/gethub/releases/tag/v{TxtVersion.Text}");
             e.Handled = true;
         }
 
         private void OnVisitWebsite(object _, RoutedEventArgs e)
         {
-            Native.OS.OpenBrowser("https://sourcegit-scm.github.io/");
+            Native.OS.OpenBrowser("https://gethub-scm.github.io/");
             e.Handled = true;
         }
 
         private void OnVisitSourceCode(object _, RoutedEventArgs e)
         {
-            Native.OS.OpenBrowser("https://github.com/sourcegit-scm/sourcegit");
+            Native.OS.OpenBrowser("https://github.com/gethub-scm/gethub");
             e.Handled = true;
         }
     }

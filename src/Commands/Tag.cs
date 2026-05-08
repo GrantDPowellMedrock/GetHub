@@ -1,8 +1,8 @@
-﻿using System.IO;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace GetHub.Commands
 {
     public class Tag : Command
     {

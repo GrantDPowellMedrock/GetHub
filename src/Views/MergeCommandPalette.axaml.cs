@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public partial class MergeCommandPalette : UserControl
     {

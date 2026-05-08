@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public static class HTTPSValidator
     {

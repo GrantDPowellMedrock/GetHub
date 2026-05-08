@@ -1,8 +1,8 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:s="using:SourceGit"
-             x:Class="SourceGit.App"
-             Name="SourceGit"
+             xmlns:s="using:GetHub"
+             x:Class="GetHub.App"
+             Name="GetHub"
              RequestedThemeVariant="Dark">
   <Application.Resources>
     <ResourceDictionary>

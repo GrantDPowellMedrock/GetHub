@@ -10,7 +10,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public class TagTreeNodeToggleButton : ToggleButton
     {

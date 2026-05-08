@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 
-namespace SourceGit.ViewModels
+namespace GetHub.ViewModels
 {
     public class OpenFileCommandPalette : ICommandPalette
     {

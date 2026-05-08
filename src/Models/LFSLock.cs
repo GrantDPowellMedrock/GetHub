@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public class LFSLockOwner
     {

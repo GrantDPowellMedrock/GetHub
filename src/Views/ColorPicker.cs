@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public class ColorPicker : Control
     {

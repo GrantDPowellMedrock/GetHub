@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public class WorktreeIcon : Path
     {

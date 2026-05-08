@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public partial class UpdateSubmodules : UserControl
     {

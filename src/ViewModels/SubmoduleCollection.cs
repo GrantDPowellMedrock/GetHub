@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using Avalonia.Collections;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.ViewModels
+namespace GetHub.ViewModels
 {
     public class SubmoduleTreeNode : ObservableObject
     {

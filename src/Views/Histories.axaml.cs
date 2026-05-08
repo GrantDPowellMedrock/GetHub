@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -14,7 +14,7 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public class HistoriesLayout : Grid
     {
@@ -666,7 +666,7 @@ namespace SourceGit.Views
 
             var copyInfos = new MenuItem();
             copyInfos.Header = App.Text("CommitCM.CopySHA") + " - " + App.Text("CommitCM.CopySubject");
-            copyInfos.Tag = OperatingSystem.IsMacOS() ? "⌘+C" : "Ctrl+C";
+            copyInfos.Tag = OperatingSystem.IsMacOS() ? "?+C" : "Ctrl+C";
             copyInfos.Click += async (_, e) =>
             {
                 var builder = new StringBuilder();
@@ -782,7 +782,7 @@ namespace SourceGit.Views
             var createBranch = new MenuItem();
             createBranch.Icon = this.CreateMenuIcon("Icons.Branch.Add");
             createBranch.Header = App.Text("CreateBranch");
-            createBranch.Tag = OperatingSystem.IsMacOS() ? "⌘+⇧+B" : "Ctrl+Shift+B";
+            createBranch.Tag = OperatingSystem.IsMacOS() ? "?+?+B" : "Ctrl+Shift+B";
             createBranch.Click += (_, e) =>
             {
                 if (repo.CanCreatePopup())
@@ -794,7 +794,7 @@ namespace SourceGit.Views
             var createTag = new MenuItem();
             createTag.Icon = this.CreateMenuIcon("Icons.Tag.Add");
             createTag.Header = App.Text("CreateTag");
-            createTag.Tag = OperatingSystem.IsMacOS() ? "⌘+⇧+T" : "Ctrl+Shift+T";
+            createTag.Tag = OperatingSystem.IsMacOS() ? "?+?+T" : "Ctrl+Shift+T";
             createTag.Click += (_, e) =>
             {
                 if (repo.CanCreatePopup())
@@ -1138,7 +1138,7 @@ namespace SourceGit.Views
 
             var copyInfo = new MenuItem();
             copyInfo.Header = App.Text("CommitCM.CopySHA") + " - " + App.Text("CommitCM.CopySubject");
-            copyInfo.Tag = OperatingSystem.IsMacOS() ? "⌘+C" : "Ctrl+C";
+            copyInfo.Tag = OperatingSystem.IsMacOS() ? "?+C" : "Ctrl+C";
             copyInfo.Click += async (_, e) =>
             {
                 await this.CopyTextAsync($"{commit.SHA.AsSpan(0, 10)} - {commit.Subject}");

@@ -1,7 +1,7 @@
-ï»¿using System;
+using System;
 using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace GetHub.Commands
 {
     public class QuerySingleCommit : Command
     {
@@ -9,7 +9,7 @@ namespace SourceGit.Commands
         {
             WorkingDirectory = repo;
             Context = repo;
-            Args = $"show --no-show-signature --decorate=full --format=%H%n%P%n%D%n%aNÂ±%aE%n%at%n%cNÂ±%cE%n%ct%n%s -s {sha}";
+            Args = $"show --no-show-signature --decorate=full --format=%H%n%P%n%D%n%aN±%aE%n%at%n%cN±%cE%n%ct%n%s -s {sha}";
         }
 
         public Models.Commit GetResult()

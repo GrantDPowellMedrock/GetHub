@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public class Locale
     {

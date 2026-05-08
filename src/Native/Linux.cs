@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,7 +8,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 
-namespace SourceGit.Native
+namespace GetHub.Native
 {
     [SupportedOSPlatform("linux")]
     internal class Linux : OS.IBackend
@@ -59,14 +59,14 @@ namespace SourceGit.Native
                     return portableDir;
             }
 
-            // Runtime data dir: ~/.sourcegit
+            // Runtime data dir: ~/.gethub
             var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var dataDir = Path.Combine(home, ".sourcegit");
+            var dataDir = Path.Combine(home, ".gethub");
             if (Directory.Exists(dataDir))
                 return dataDir;
 
-            // Migrate old data: ~/.config/SourceGit
-            var oldDataDir = Path.Combine(home, ".config", "SourceGit");
+            // Migrate old data: ~/.config/GetHub
+            var oldDataDir = Path.Combine(home, ".config", "GetHub");
             if (Directory.Exists(oldDataDir))
             {
                 try

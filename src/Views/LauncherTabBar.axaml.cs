@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 using Avalonia;
@@ -8,7 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Styling;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public class LauncherTabSizeBox : Border
     {
@@ -354,7 +354,7 @@ namespace SourceGit.Views
 
                 var close = new MenuItem();
                 close.Header = App.Text("PageTabBar.Tab.Close");
-                close.Tag = OperatingSystem.IsMacOS() ? "⌘+W" : "Ctrl+W";
+                close.Tag = OperatingSystem.IsMacOS() ? "?+W" : "Ctrl+W";
                 close.Click += (_, ev) =>
                 {
                     vm.CloseTab(page);
@@ -396,6 +396,6 @@ namespace SourceGit.Views
         private bool _pressedTab = false;
         private Point _pressedTabPosition = new();
         private bool _startDragTab = false;
-        private readonly DataFormat<string> _dndMainTabFormat = DataFormat.CreateStringApplicationFormat("sourcegit-dnd-main-tab");
+        private readonly DataFormat<string> _dndMainTabFormat = DataFormat.CreateStringApplicationFormat("gethub-dnd-main-tab");
     }
 }

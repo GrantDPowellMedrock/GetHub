@@ -1,8 +1,8 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace GetHub.Commands
 {
     public class QueryCommitsForInteractiveRebase : Command
     {
@@ -12,7 +12,7 @@ namespace SourceGit.Commands
 
             WorkingDirectory = repo;
             Context = repo;
-            Args = $"log --topo-order --cherry-pick --right-only --no-merges --no-show-signature --decorate=full --format=\"%H%n%P%n%D%n%aNÂ±%aE%n%at%n%cNÂ±%cE%n%ct%n%s%n%B%n{_boundary}\" {on}...HEAD";
+            Args = $"log --topo-order --cherry-pick --right-only --no-merges --no-show-signature --decorate=full --format=\"%H%n%P%n%D%n%aN±%aE%n%at%n%cN±%cE%n%ct%n%s%n%B%n{_boundary}\" {on}...HEAD";
         }
 
         public async Task<List<Models.InteractiveCommit>> GetResultAsync()

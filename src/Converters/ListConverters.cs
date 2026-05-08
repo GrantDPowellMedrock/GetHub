@@ -1,9 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 
 using Avalonia.Data.Converters;
 
-namespace SourceGit.Converters
+namespace GetHub.Converters
 {
     public static class ListConverters
     {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -15,7 +15,7 @@ using TextMateSharp.Internal.Types;
 using TextMateSharp.Registry;
 using TextMateSharp.Themes;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public static class GrammarUtility
     {
@@ -57,7 +57,7 @@ namespace SourceGit.Models
             {
                 if (grammar.Scope.Equals(scopeName, StringComparison.OrdinalIgnoreCase))
                 {
-                    var asset = AssetLoader.Open(new Uri($"avares://SourceGit/Resources/Grammars/{grammar.File}",
+                    var asset = AssetLoader.Open(new Uri($"avares://GetHub/Resources/Grammars/{grammar.File}",
                         UriKind.RelativeOrAbsolute));
 
                     try

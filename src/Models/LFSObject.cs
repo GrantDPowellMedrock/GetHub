@@ -1,6 +1,6 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public partial class LFSObject
     {

@@ -1,6 +1,6 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public class User
     {
@@ -16,7 +16,7 @@ namespace SourceGit.Models
 
         public User(string data)
         {
-            var parts = data.Split('±', 2);
+            var parts = data.Split('�', 2);
             if (parts.Length < 2)
                 parts = [string.Empty, data];
 

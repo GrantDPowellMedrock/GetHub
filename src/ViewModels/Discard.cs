@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SourceGit.ViewModels
+namespace GetHub.ViewModels
 {
     public class DiscardAllMode
     {

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public class TextInlineChange(int dp, int dc, int ap, int ac)
     {
@@ -323,16 +323,16 @@ namespace SourceGit.Models
             {
                 var ch = (char)i;
                 // Unicode Lo: CJK, hiragana, katakana, hangul, Thai, Arabic, Hebrew, etc.
-                // → group consecutive chars into one chunk (no space delimiter in these languages)
+                // ? group consecutive chars into one chunk (no space delimiter in these languages)
                 if (char.GetUnicodeCategory(ch) == UnicodeCategory.OtherLetter)
                     cache[i] = CharCategory.OtherLetter;
 
                 // Unicode Ll/Lu/Lt/Lm + digit: latin, greek, cyrillic and their diacritic variants
-                // → group consecutive chars into one chunk (words in space-delimited languages)
+                // ? group consecutive chars into one chunk (words in space-delimited languages)
                 else if (char.IsLetterOrDigit(ch))
                     cache[i] = CharCategory.Letter;
 
-                // everything else (whitespace, control, punctuation, symbols) → Other (default)
+                // everything else (whitespace, control, punctuation, symbols) ? Other (default)
             }
 
             return cache;

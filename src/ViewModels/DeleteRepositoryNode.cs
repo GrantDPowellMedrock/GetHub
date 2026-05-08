@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
-namespace SourceGit.ViewModels
+namespace GetHub.ViewModels
 {
     public class DeleteRepositoryNode : Popup
     {

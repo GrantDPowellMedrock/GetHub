@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace GetHub.Commands
 {
     public static class SaveChangesAsPatch
     {

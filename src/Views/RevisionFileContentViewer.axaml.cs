@@ -11,7 +11,7 @@ using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
 using AvaloniaEdit.TextMate;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public class RevisionTextFileView : TextEditor
     {

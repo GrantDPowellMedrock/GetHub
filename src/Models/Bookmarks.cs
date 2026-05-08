@@ -1,4 +1,4 @@
-﻿namespace SourceGit.Models
+namespace GetHub.Models
 {
     public static class Bookmarks
     {

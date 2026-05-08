@@ -1,4 +1,4 @@
-﻿namespace SourceGit.Commands
+namespace GetHub.Commands
 {
     public class Init : Command
     {

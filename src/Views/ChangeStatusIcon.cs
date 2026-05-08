@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 
 using Avalonia;
@@ -6,11 +6,11 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public class ChangeStatusIcon : Control
     {
-        private static readonly string[] INDICATOR = ["?", "±", "T", "+", "−", "➜", "❏", "★", "!"];
+        private static readonly string[] INDICATOR = ["?", "�", "T", "+", "-", "?", "?", "?", "!"];
         private static readonly Color[] COLOR =
         [
             Colors.Transparent,
@@ -47,7 +47,7 @@ namespace SourceGit.Views
             if (Change == null || Bounds.Width <= 0)
                 return;
 
-            var typeface = new Typeface("fonts:SourceGit#JetBrains Mono");
+            var typeface = new Typeface("fonts:GetHub#JetBrains Mono");
 
             var idx = (int)(IsUnstagedChange ? Change.WorkTree : Change.Index);
             var indicator = INDICATOR[idx];

@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public class Watcher : IDisposable
     {

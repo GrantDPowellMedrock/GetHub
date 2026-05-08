@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace SourceGit.Commands
+namespace GetHub.Commands
 {
     public partial class QueryStagedChangesWithAmend : Command
     {

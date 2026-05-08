@@ -1,8 +1,8 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public partial class DealWithLocalChangesMethod : UserControl
     {

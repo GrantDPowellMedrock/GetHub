@@ -1,6 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public enum FilterType
     {

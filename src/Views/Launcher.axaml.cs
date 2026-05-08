@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -8,7 +8,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.VisualTree;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public partial class Launcher : ChromelessWindow
     {

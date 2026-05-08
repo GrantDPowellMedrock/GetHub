@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,7 +9,7 @@ using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 
-namespace SourceGit.Native
+namespace GetHub.Native
 {
     public static partial class OS
     {

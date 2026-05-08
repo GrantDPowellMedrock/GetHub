@@ -2,7 +2,7 @@ using System;
 using System.Windows.Input;
 using Avalonia.Controls.ApplicationLifetimes;
 
-namespace SourceGit
+namespace GetHub
 {
     public partial class App
     {

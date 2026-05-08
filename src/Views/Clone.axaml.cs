@@ -4,7 +4,7 @@ using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public partial class Clone : UserControl
     {

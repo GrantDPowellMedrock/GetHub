@@ -1,10 +1,10 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace GetHub.Commands
 {
     public class QueryCommits : Command
     {
@@ -12,14 +12,14 @@ namespace SourceGit.Commands
         {
             WorkingDirectory = repo;
             Context = repo;
-            Args = $"log --no-show-signature --decorate=full --format=%H%x00%P%x00%D%x00%aNÂ±%aE%x00%at%x00%cNÂ±%cE%x00%ct%x00%s {limits}";
+            Args = $"log --no-show-signature --decorate=full --format=%H%x00%P%x00%D%x00%aN±%aE%x00%at%x00%cN±%cE%x00%ct%x00%s {limits}";
             _markMerged = markMerged;
         }
 
         public QueryCommits(string repo, string filter, Models.CommitSearchMethod method, bool onlyCurrentBranch)
         {
             var builder = new StringBuilder();
-            builder.Append("log -1000 --date-order --no-show-signature --decorate=full --format=%H%x00%P%x00%D%x00%aNÂ±%aE%x00%at%x00%cNÂ±%cE%x00%ct%x00%s ");
+            builder.Append("log -1000 --date-order --no-show-signature --decorate=full --format=%H%x00%P%x00%D%x00%aN±%aE%x00%at%x00%cN±%cE%x00%ct%x00%s ");
 
             if (!onlyCurrentBranch)
                 builder.Append("--branches --remotes ");

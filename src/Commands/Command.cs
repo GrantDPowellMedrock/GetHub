@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace GetHub.Commands
 {
     public partial class Command
     {
@@ -175,7 +175,7 @@ namespace SourceGit.Commands
             var selfExecFile = Process.GetCurrentProcess().MainModule!.FileName;
             start.Environment.Add("SSH_ASKPASS", selfExecFile); // Can not use parameter here, because it invoked by SSH with `exec`
             start.Environment.Add("SSH_ASKPASS_REQUIRE", "prefer");
-            start.Environment.Add("SOURCEGIT_LAUNCH_AS_ASKPASS", "TRUE");
+            start.Environment.Add("GETHUB_LAUNCH_AS_ASKPASS", "TRUE");
             if (!OperatingSystem.IsLinux())
                 start.Environment.Add("DISPLAY", "required");
 

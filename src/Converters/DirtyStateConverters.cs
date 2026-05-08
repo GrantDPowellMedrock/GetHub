@@ -1,7 +1,7 @@
-ï»¿using Avalonia.Data.Converters;
+using Avalonia.Data.Converters;
 using Avalonia.Media;
 
-namespace SourceGit.Converters
+namespace GetHub.Converters
 {
     public static class DirtyStateConverters
     {
@@ -19,10 +19,10 @@ namespace SourceGit.Converters
             new FuncValueConverter<Models.DirtyState, string>(v =>
             {
                 if (v.HasFlag(Models.DirtyState.HasLocalChanges))
-                    return " â€¢ " + App.Text("DirtyState.HasLocalChanges");
+                    return " • " + App.Text("DirtyState.HasLocalChanges");
                 if (v.HasFlag(Models.DirtyState.HasPendingPullOrPush))
-                    return " â€¢ " + App.Text("DirtyState.HasPendingPullOrPush");
-                return " â€¢ " + App.Text("DirtyState.UpToDate");
+                    return " • " + App.Text("DirtyState.HasPendingPullOrPush");
+                return " • " + App.Text("DirtyState.UpToDate");
             });
     }
 }

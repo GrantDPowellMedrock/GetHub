@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public static class NumericSort
     {

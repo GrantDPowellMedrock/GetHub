@@ -1,4 +1,4 @@
-﻿namespace SourceGit.Models
+namespace GetHub.Models
 {
     public class RepositoryStatus
     {
@@ -20,9 +20,9 @@
             get
             {
                 if (Ahead > 0)
-                    return Behind > 0 ? $"{Ahead}↑ {Behind}↓" : $"{Ahead}↑";
+                    return Behind > 0 ? $"{Ahead}? {Behind}?" : $"{Ahead}?";
 
-                return Behind > 0 ? $"{Behind}↓" : string.Empty;
+                return Behind > 0 ? $"{Behind}?" : string.Empty;
             }
         }
     }

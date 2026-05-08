@@ -1,6 +1,6 @@
-﻿using System.Text;
+using System.Text;
 
-namespace SourceGit.Commands
+namespace GetHub.Commands
 {
     public class Clone : Command
     {

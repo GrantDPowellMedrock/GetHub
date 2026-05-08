@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public class RevisionFileTreeNodeToggleButton : ToggleButton
     {
@@ -479,7 +479,7 @@ namespace SourceGit.Views
             var copyPath = new MenuItem();
             copyPath.Header = App.Text("CopyPath");
             copyPath.Icon = this.CreateMenuIcon("Icons.Copy");
-            copyPath.Tag = OperatingSystem.IsMacOS() ? "⌘+C" : "Ctrl+C";
+            copyPath.Tag = OperatingSystem.IsMacOS() ? "?+C" : "Ctrl+C";
             copyPath.Click += async (_, ev) =>
             {
                 await this.CopyTextAsync(path);
@@ -489,7 +489,7 @@ namespace SourceGit.Views
             var copyFullPath = new MenuItem();
             copyFullPath.Header = App.Text("CopyFullPath");
             copyFullPath.Icon = this.CreateMenuIcon("Icons.Copy");
-            copyFullPath.Tag = OperatingSystem.IsMacOS() ? "⌘+⇧+C" : "Ctrl+Shift+C";
+            copyFullPath.Tag = OperatingSystem.IsMacOS() ? "?+?+C" : "Ctrl+Shift+C";
             copyFullPath.Click += async (_, e) =>
             {
                 await this.CopyTextAsync(fullPath);
@@ -519,7 +519,7 @@ namespace SourceGit.Views
             {
                 var defaultEditor = new MenuItem();
                 defaultEditor.Header = App.Text("Open.SystemDefaultEditor");
-                defaultEditor.Tag = OperatingSystem.IsMacOS() ? "⌘+O" : "Ctrl+O";
+                defaultEditor.Tag = OperatingSystem.IsMacOS() ? "?+O" : "Ctrl+O";
                 defaultEditor.Click += async (_, ev) =>
                 {
                     await vm.OpenRevisionFileAsync(file.Path, null);
@@ -554,7 +554,7 @@ namespace SourceGit.Views
             saveAs.Header = App.Text("SaveAs");
             saveAs.Icon = this.CreateMenuIcon("Icons.Save");
             saveAs.IsEnabled = file.Type == Models.ObjectType.Blob;
-            saveAs.Tag = OperatingSystem.IsMacOS() ? "⌘+⇧+S" : "Ctrl+Shift+S";
+            saveAs.Tag = OperatingSystem.IsMacOS() ? "?+?+S" : "Ctrl+Shift+S";
             saveAs.Click += async (_, ev) =>
             {
                 var storageProvider = TopLevel.GetTopLevel(this)?.StorageProvider;
@@ -730,7 +730,7 @@ namespace SourceGit.Views
             var copyPath = new MenuItem();
             copyPath.Header = App.Text("CopyPath");
             copyPath.Icon = this.CreateMenuIcon("Icons.Copy");
-            copyPath.Tag = OperatingSystem.IsMacOS() ? "⌘+C" : "Ctrl+C";
+            copyPath.Tag = OperatingSystem.IsMacOS() ? "?+C" : "Ctrl+C";
             copyPath.Click += async (_, ev) =>
             {
                 await this.CopyTextAsync(file.Path);
@@ -740,7 +740,7 @@ namespace SourceGit.Views
             var copyFullPath = new MenuItem();
             copyFullPath.Header = App.Text("CopyFullPath");
             copyFullPath.Icon = this.CreateMenuIcon("Icons.Copy");
-            copyFullPath.Tag = OperatingSystem.IsMacOS() ? "⌘+⇧+C" : "Ctrl+Shift+C";
+            copyFullPath.Tag = OperatingSystem.IsMacOS() ? "?+?+C" : "Ctrl+Shift+C";
             copyFullPath.Click += async (_, e) =>
             {
                 await this.CopyTextAsync(fullPath);

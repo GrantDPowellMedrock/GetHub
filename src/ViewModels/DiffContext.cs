@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.ViewModels
+namespace GetHub.ViewModels
 {
     public class DiffContext : ObservableObject
     {
@@ -100,7 +100,7 @@ namespace SourceGit.ViewModels
             if (string.IsNullOrEmpty(_option.OrgPath) || _option.OrgPath == "/dev/null")
                 Title = _option.Path;
             else
-                Title = $"{_option.OrgPath} → {_option.Path}";
+                Title = $"{_option.OrgPath} ? {_option.Path}";
 
             LoadContent();
         }

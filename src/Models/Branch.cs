@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public enum BranchSortMode
     {
@@ -35,9 +35,9 @@ namespace SourceGit.Models
                 var ahead = Ahead.Count;
                 var behind = Behind.Count;
                 if (ahead > 0)
-                    return behind > 0 ? $"{ahead}↑ {behind}↓" : $"{ahead}↑";
+                    return behind > 0 ? $"{ahead}? {behind}?" : $"{ahead}?";
 
-                return behind > 0 ? $"{behind}↓" : string.Empty;
+                return behind > 0 ? $"{behind}?" : string.Empty;
             }
         }
     }

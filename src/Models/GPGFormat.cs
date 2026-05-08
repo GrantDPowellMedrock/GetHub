@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public class GPGFormat(string name, string value, string desc, string program, bool needFindProgram)
     {

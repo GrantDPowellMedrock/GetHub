@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public class ChromelessWindow : Window
     {

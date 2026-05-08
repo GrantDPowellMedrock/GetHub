@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public partial class ExecuteCustomAction : UserControl
     {

@@ -6,7 +6,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public class RepositoryTreeNodeToggleButton : ToggleButton
     {
@@ -368,7 +368,7 @@ namespace SourceGit.Views
         private bool _pressedTreeNode = false;
         private Point _pressedTreeNodePosition = new Point();
         private bool _startDragTreeNode = false;
-        private readonly DataFormat<string> _dndRepoNode = DataFormat.CreateStringApplicationFormat("sourcegit-dnd-repo-node");
+        private readonly DataFormat<string> _dndRepoNode = DataFormat.CreateStringApplicationFormat("gethub-dnd-repo-node");
         private CancellationTokenSource _cancellation = new CancellationTokenSource();
     }
 }

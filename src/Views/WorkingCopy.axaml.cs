@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -8,7 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 
-namespace SourceGit.Views
+namespace GetHub.Views
 {
     public partial class WorkingCopy : UserControl
     {
@@ -284,7 +284,7 @@ namespace SourceGit.Views
                     var diffWithMerger = new MenuItem();
                     diffWithMerger.Header = App.Text("OpenInExternalMergeTool");
                     diffWithMerger.Icon = this.CreateMenuIcon("Icons.OpenWith");
-                    diffWithMerger.Tag = OperatingSystem.IsMacOS() ? "⌘+⇧+D" : "Ctrl+Shift+D";
+                    diffWithMerger.Tag = OperatingSystem.IsMacOS() ? "?+?+D" : "Ctrl+Shift+D";
                     diffWithMerger.Click += (_, ev) =>
                     {
                         vm.UseExternalDiffTool(change, true);
@@ -686,7 +686,7 @@ namespace SourceGit.Views
                 var copy = new MenuItem();
                 copy.Header = App.Text("CopyPath");
                 copy.Icon = this.CreateMenuIcon("Icons.Copy");
-                copy.Tag = OperatingSystem.IsMacOS() ? "⌘+C" : "Ctrl+C";
+                copy.Tag = OperatingSystem.IsMacOS() ? "?+C" : "Ctrl+C";
                 copy.Click += async (_, e) =>
                 {
                     await this.CopyTextAsync(hasSelectedFolder ? selectedSingleFolder : change.Path);
@@ -696,7 +696,7 @@ namespace SourceGit.Views
                 var copyFullPath = new MenuItem();
                 copyFullPath.Header = App.Text("CopyFullPath");
                 copyFullPath.Icon = this.CreateMenuIcon("Icons.Copy");
-                copyFullPath.Tag = OperatingSystem.IsMacOS() ? "⌘+⇧+C" : "Ctrl+Shift+C";
+                copyFullPath.Tag = OperatingSystem.IsMacOS() ? "?+?+C" : "Ctrl+Shift+C";
                 copyFullPath.Click += async (_, e) =>
                 {
                     await this.CopyTextAsync(hasSelectedFolder ? Native.OS.GetAbsPath(repo.FullPath, selectedSingleFolder) : path);
@@ -879,7 +879,7 @@ namespace SourceGit.Views
                     var copy = new MenuItem();
                     copy.Header = App.Text("CopyPath");
                     copy.Icon = this.CreateMenuIcon("Icons.Copy");
-                    copy.Tag = OperatingSystem.IsMacOS() ? "⌘+C" : "Ctrl+C";
+                    copy.Tag = OperatingSystem.IsMacOS() ? "?+C" : "Ctrl+C";
                     copy.Click += async (_, e) =>
                     {
                         await this.CopyTextAsync(selectedSingleFolder);
@@ -889,7 +889,7 @@ namespace SourceGit.Views
                     var copyFullPath = new MenuItem();
                     copyFullPath.Header = App.Text("CopyPath");
                     copyFullPath.Icon = this.CreateMenuIcon("Icons.Copy");
-                    copyFullPath.Tag = OperatingSystem.IsMacOS() ? "⌘+⇧+C" : "Ctrl+Shift+C";
+                    copyFullPath.Tag = OperatingSystem.IsMacOS() ? "?+?+C" : "Ctrl+Shift+C";
                     copyFullPath.Click += async (_, e) =>
                     {
                         await this.CopyTextAsync(Native.OS.GetAbsPath(repo.FullPath, selectedSingleFolder));
@@ -962,7 +962,7 @@ namespace SourceGit.Views
                 var openWithMerger = new MenuItem();
                 openWithMerger.Header = App.Text("OpenInExternalMergeTool");
                 openWithMerger.Icon = this.CreateMenuIcon("Icons.OpenWith");
-                openWithMerger.Tag = OperatingSystem.IsMacOS() ? "⌘+⇧+D" : "Ctrl+Shift+D";
+                openWithMerger.Tag = OperatingSystem.IsMacOS() ? "?+?+D" : "Ctrl+Shift+D";
                 openWithMerger.Click += (_, ev) =>
                 {
                     vm.UseExternalDiffTool(change, false);
@@ -1157,7 +1157,7 @@ namespace SourceGit.Views
                 var copyPath = new MenuItem();
                 copyPath.Header = App.Text("CopyPath");
                 copyPath.Icon = this.CreateMenuIcon("Icons.Copy");
-                copyPath.Tag = OperatingSystem.IsMacOS() ? "⌘+C" : "Ctrl+C";
+                copyPath.Tag = OperatingSystem.IsMacOS() ? "?+C" : "Ctrl+C";
                 copyPath.Click += async (_, e) =>
                 {
                     await this.CopyTextAsync(hasSelectedFolder ? selectedSingleFolder : change.Path);
@@ -1167,7 +1167,7 @@ namespace SourceGit.Views
                 var copyFullPath = new MenuItem();
                 copyFullPath.Header = App.Text("CopyFullPath");
                 copyFullPath.Icon = this.CreateMenuIcon("Icons.Copy");
-                copyFullPath.Tag = OperatingSystem.IsMacOS() ? "⌘+⇧+C" : "Ctrl+Shift+C";
+                copyFullPath.Tag = OperatingSystem.IsMacOS() ? "?+?+C" : "Ctrl+Shift+C";
                 copyFullPath.Click += async (_, e) =>
                 {
                     var target = hasSelectedFolder ? Native.OS.GetAbsPath(repo.FullPath, selectedSingleFolder) : path;
@@ -1270,7 +1270,7 @@ namespace SourceGit.Views
                     var copyPath = new MenuItem();
                     copyPath.Header = App.Text("CopyPath");
                     copyPath.Icon = this.CreateMenuIcon("Icons.Copy");
-                    copyPath.Tag = OperatingSystem.IsMacOS() ? "⌘+C" : "Ctrl+C";
+                    copyPath.Tag = OperatingSystem.IsMacOS() ? "?+C" : "Ctrl+C";
                     copyPath.Click += async (_, e) =>
                     {
                         await this.CopyTextAsync(selectedSingleFolder);
@@ -1280,7 +1280,7 @@ namespace SourceGit.Views
                     var copyFullPath = new MenuItem();
                     copyFullPath.Header = App.Text("CopyFullPath");
                     copyFullPath.Icon = this.CreateMenuIcon("Icons.Copy");
-                    copyFullPath.Tag = OperatingSystem.IsMacOS() ? "⌘+⇧+C" : "Ctrl+Shift+C";
+                    copyFullPath.Tag = OperatingSystem.IsMacOS() ? "?+?+C" : "Ctrl+Shift+C";
                     copyFullPath.Click += async (_, e) =>
                     {
                         await this.CopyTextAsync(Native.OS.GetAbsPath(repo.FullPath, selectedSingleFolder));
@@ -1308,7 +1308,7 @@ namespace SourceGit.Views
             {
                 var defaultEditor = new MenuItem();
                 defaultEditor.Header = App.Text("Open.SystemDefaultEditor");
-                defaultEditor.Tag = OperatingSystem.IsMacOS() ? "⌘+O" : "Ctrl+O";
+                defaultEditor.Tag = OperatingSystem.IsMacOS() ? "?+O" : "Ctrl+O";
                 defaultEditor.Click += (_, ev) =>
                 {
                     Native.OS.OpenWithDefaultEditor(fullpath);

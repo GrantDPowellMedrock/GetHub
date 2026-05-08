@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public class ConventionalCommitType
     {

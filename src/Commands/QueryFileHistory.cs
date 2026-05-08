@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace GetHub.Commands
 {
     public partial class QueryFileHistory : Command
     {
@@ -20,7 +20,7 @@ namespace SourceGit.Commands
             RaiseError = false;
 
             var builder = new StringBuilder();
-            builder.Append("log --no-show-signature --date-order -n 10000 --decorate=no --format=\"@%H%x00%P%x00%aN±%aE%x00%at%x00%s\" --follow --name-status ");
+            builder.Append("log --no-show-signature --date-order -n 10000 --decorate=no --format=\"@%H%x00%P%x00%aN�%aE%x00%at%x00%s\" --follow --name-status ");
             if (!string.IsNullOrEmpty(head))
                 builder.Append(head).Append(" ");
             builder.Append("-- ").Append(path.Quoted());

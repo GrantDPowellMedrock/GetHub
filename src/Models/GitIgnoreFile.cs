@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using Avalonia.Media;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public class GitIgnoreFile
     {

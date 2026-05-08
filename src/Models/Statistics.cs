@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -9,7 +9,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 
 using SkiaSharp;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public enum StatisticsMode
     {
@@ -199,7 +199,7 @@ namespace SourceGit.Models
 
         public void AddCommit(string author, double timestamp)
         {
-            var emailIdx = author.IndexOf('±');
+            var emailIdx = author.IndexOf('�');
             var email = author.Substring(emailIdx + 1).ToLower(CultureInfo.CurrentCulture);
             if (!_users.TryGetValue(email, out var user))
             {

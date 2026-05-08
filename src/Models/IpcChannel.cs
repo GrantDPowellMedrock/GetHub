@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
 using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SourceGit.Models
+namespace GetHub.Models
 {
     public class IpcChannel : IDisposable
     {
@@ -19,7 +19,7 @@ namespace SourceGit.Models
                 _singletonLock = File.Open(Path.Combine(Native.OS.DataDir, "process.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
                 IsFirstInstance = true;
                 _server = new NamedPipeServerStream(
-                    "SourceGitIPCChannel" + Environment.UserName,
+                    "GetHubIPCChannel" + Environment.UserName,
                     PipeDirection.In,
                     -1,
                     PipeTransmissionMode.Byte,
@@ -37,7 +37,7 @@ namespace SourceGit.Models
         {
             try
             {
-                using (var client = new NamedPipeClientStream(".", "SourceGitIPCChannel" + Environment.UserName, PipeDirection.Out, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly))
+                using (var client = new NamedPipeClientStream(".", "GetHubIPCChannel" + Environment.UserName, PipeDirection.Out, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly))
                 {
                     client.Connect(1000);
                     if (!client.IsConnected)
