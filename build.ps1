@@ -45,6 +45,7 @@ Write-Host "[build] GetHub v$version ($Runtime) -> GetHub_Dist" -ForegroundColor
     -r $Runtime `
     --self-contained `
     -p:DisableAOT=true `
+    -p:DisableUpdateDetection=true `
     -p:PublishTrimmed=true `
     -p:PublishSingleFile=true `
     -p:IncludeNativeLibrariesForSelfExtract=true `

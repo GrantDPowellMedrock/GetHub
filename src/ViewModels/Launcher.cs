@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text;
 
 using Avalonia.Collections;
@@ -11,6 +12,14 @@ namespace GetHub.ViewModels
 {
     public class Launcher : ObservableObject
     {
+        private static readonly string AppVersion = GetAppVersion();
+
+        private static string GetAppVersion()
+        {
+            var ver = Assembly.GetExecutingAssembly().GetName().Version;
+            return ver != null ? $"{ver.Major}.{ver.Minor:D2}" : string.Empty;
+        }
+
         public string Title
         {
             get => _title;
@@ -451,6 +460,7 @@ namespace GetHub.ViewModels
                 _activeWorkspace.ActiveIdx = _activeWorkspace.Repositories.IndexOf(repo.FullPath);
 
             var builder = new StringBuilder(512);
+            builder.Append("GetHub ").Append(AppVersion).Append(" - ");
             builder.Append(string.IsNullOrEmpty(_activePage.Node.Name) ? "Repositories" : _activePage.Node.Name);
 
             var workspaces = Preferences.Instance.Workspaces;
