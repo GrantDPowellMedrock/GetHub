@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using Avalonia.Controls;
@@ -488,6 +489,20 @@ namespace GetHub.Views
             }
 
             ev.Handled = true;
+        }
+
+        private void OpenInZed(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ViewModels.Repository repo)
+            {
+                var zed = Native.OS.ExternalTools.Find(x => x.Name.Equals("Zed", StringComparison.Ordinal));
+                if (zed != null)
+                    zed.Launch(repo.FullPath.Quoted());
+                else
+                    repo.SendNotification("Zed was not found on this system.", true);
+
+                e.Handled = true;
+            }
         }
 
         private async void OpenGitLogs(object sender, RoutedEventArgs e)

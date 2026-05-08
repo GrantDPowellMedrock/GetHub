@@ -24,6 +24,10 @@
       <Button Classes="icon_button" Width="32" Click="OpenConfigure" ToolTip.Tip="{DynamicResource Text.Repository.Configure}">
         <Path Width="14" Height="14" Data="{StaticResource Icons.Settings}"/>
       </Button>
+
+      <Button Classes="icon_button" Width="32" Click="OpenInZed" ToolTip.Tip="Open in Zed">
+        <Image Width="16" Height="16" Source="avares://GetHub/Resources/Images/ExternalToolIcons/zed.png"/>
+      </Button>
     </StackPanel>
 
     <StackPanel Grid.Column="1" Orientation="Horizontal">
