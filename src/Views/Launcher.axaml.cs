@@ -2,6 +2,7 @@ using System;
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -423,6 +424,110 @@ namespace GetHub.Views
             e.Handled = true;
         }
 
+        private void OnSelectGroup(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: string name } && DataContext is ViewModels.Launcher vm)
+                vm.ActiveGroup = name;
+            e.Handled = true;
+        }
+
+        private void OnGroupPointerPressed(object sender, PointerPressedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ViewModels.LauncherGroup g && !g.IsPseudo)
+            {
+                _pressedGroup = true;
+                _startDragGroup = false;
+                _pressedGroupPosition = e.GetPosition(btn);
+            }
+        }
+
+        private void OnGroupPointerReleased(object _1, PointerReleasedEventArgs _2)
+        {
+            _pressedGroup = false;
+            _startDragGroup = false;
+        }
+
+        private async void OnGroupPointerMoved(object sender, PointerEventArgs e)
+        {
+            if (_pressedGroup && !_startDragGroup &&
+                sender is Button btn &&
+                btn.DataContext is ViewModels.LauncherGroup g && !g.IsPseudo)
+            {
+                var delta = e.GetPosition(btn) - _pressedGroupPosition;
+                if (delta.X * delta.X + delta.Y * delta.Y < 64)
+                    return;
+
+                _startDragGroup = true;
+                var data = new DataTransfer();
+                data.Add(DataTransferItem.Create(_dndGroupFormat, g.Name));
+                await DragDrop.DoDragDropAsync(e, data, DragDropEffects.Move);
+            }
+            e.Handled = true;
+        }
+
+        private void OnGroupDrop(object sender, DragEventArgs e)
+        {
+            if (e.DataTransfer.TryGetValue(_dndGroupFormat) is not { Length: > 0 } fromName)
+                return;
+            if (sender is not Button btn || btn.DataContext is not ViewModels.LauncherGroup to || to.IsPseudo)
+                return;
+            if (DataContext is not ViewModels.Launcher vm)
+                return;
+
+            vm.MoveGroup(fromName, to.Name);
+            _pressedGroup = false;
+            _startDragGroup = false;
+            e.Handled = true;
+        }
+
+        private void OnGroupContextRequested(object sender, ContextRequestedEventArgs e)
+        {
+            if (sender is not Button btn || btn.DataContext is not ViewModels.LauncherGroup group)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            if (group.IsPseudo || DataContext is not ViewModels.Launcher vm)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            var menu = new ContextMenu();
+
+            var clear = new MenuItem { Header = "No color" };
+            clear.Click += (_, ev) => { vm.SetGroupColor(group.Name, 0); ev.Handled = true; };
+            menu.Items.Add(clear);
+            menu.Items.Add(new MenuItem { Header = "-" });
+
+            string[] labels = { "Red", "Orange", "Gold", "Forest Green", "Dark Cyan", "Deep Sky Blue", "Purple" };
+            for (var i = 1; i < Models.Bookmarks.Brushes.Length; i++)
+            {
+                var idx = i;
+                var item = new MenuItem
+                {
+                    Header = labels[i - 1],
+                    Icon = new Path
+                    {
+                        Width = 12,
+                        Height = 12,
+                        Data = Application.Current.FindResource("Icons.Bookmark") as Geometry,
+                        Fill = Models.Bookmarks.Brushes[idx]
+                    }
+                };
+                item.Click += (_, ev) => { vm.SetGroupColor(group.Name, idx); ev.Handled = true; };
+                menu.Items.Add(item);
+            }
+
+            menu.Open(btn);
+            e.Handled = true;
+        }
+
         private WindowState _lastWindowState = WindowState.Normal;
+        private static readonly DataFormat<string> _dndGroupFormat = DataFormat.CreateStringApplicationFormat("gethub-dnd-group");
+        private bool _pressedGroup;
+        private bool _startDragGroup;
+        private Point _pressedGroupPosition;
     }
 }

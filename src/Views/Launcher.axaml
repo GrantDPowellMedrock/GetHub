@@ -3,6 +3,7 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:s="using:GetHub"
+                    xmlns:c="using:GetHub.Converters"
                     xmlns:vm="using:GetHub.ViewModels"
                     xmlns:v="using:GetHub.Views"
                     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -15,8 +16,27 @@
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="{Binding #ThisControl.CaptionHeight}"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
+
+    <Grid.Styles>
+      <Style Selector="Button.group_tab">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+        <Setter Property="CornerRadius" Value="0"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.FG2}"/>
+      </Style>
+      <Style Selector="Button.group_tab:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource Brush.FG1}"/>
+      </Style>
+      <Style Selector="Button.group_tab.active">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.FG1}"/>
+      </Style>
+    </Grid.Styles>
 
     <!-- Custom TitleBar -->
     <Grid Grid.Row="0" ColumnDefinitions="Auto,32,32,*,Auto">
@@ -105,8 +125,52 @@
         <Path Width="13" Height="13" Margin="0,2,0,0" Data="{StaticResource Icons.Tabs}"/>
       </Button>
 
-      <!-- Pages Tabs -->
-      <v:LauncherTabBar Grid.Column="3" Height="30" Margin="0,0,16,0" VerticalAlignment="Bottom"/>
+      <!-- Group Tab Strip (filters the page tabs below) -->
+      <ScrollViewer Grid.Column="3"
+                    Margin="6,0,8,0"
+                    VerticalAlignment="Bottom"
+                    HorizontalScrollBarVisibility="Hidden"
+                    VerticalScrollBarVisibility="Disabled">
+        <ItemsControl ItemsSource="{Binding Groups}" Height="30">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"/>
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="vm:LauncherGroup">
+              <Button Classes="group_tab"
+                      Margin="0,0,4,0"
+                      Padding="10,4"
+                      VerticalAlignment="Stretch"
+                      Click="OnSelectGroup"
+                      ContextRequested="OnGroupContextRequested"
+                      PointerPressed="OnGroupPointerPressed"
+                      PointerMoved="OnGroupPointerMoved"
+                      PointerReleased="OnGroupPointerReleased"
+                      DragDrop.AllowDrop="True"
+                      DragDrop.Drop="OnGroupDrop"
+                      Tag="{Binding Name}">
+                <Classes.active>
+                  <MultiBinding Converter="{x:Static c:MultiObjectConverters.AreEqual}">
+                    <Binding Path="Name"/>
+                    <Binding Path="((vm:Launcher)DataContext).ActiveGroup" ElementName="ThisControl"/>
+                  </MultiBinding>
+                </Classes.active>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                  <Path Width="10" Height="10"
+                        Margin="0,0,6,0"
+                        VerticalAlignment="Center"
+                        Data="{StaticResource Icons.Bookmark}"
+                        Fill="{Binding Bookmark, Converter={x:Static c:IntConverters.ToBookmarkBrush}}"
+                        IsVisible="{Binding Bookmark, Converter={x:Static c:IntConverters.IsGreaterThanZero}}"/>
+                  <TextBlock Text="{Binding Name}" FontSize="12" VerticalAlignment="Center"/>
+                </StackPanel>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
 
       <!-- Caption Buttons (Windows/Linux) -->
       <Border Grid.Column="4" Margin="16,0,0,0" IsVisible="{Binding #ThisControl.HasRightCaptionButton}">
@@ -114,8 +178,16 @@
       </Border>
     </Grid>
 
+    <!-- Pages Tabs (below title bar, full-width) -->
+    <Border Grid.Row="1"
+            Background="{DynamicResource Brush.TitleBar}"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource Brush.Border0}">
+      <v:LauncherTabBar Height="30" Margin="0,0,16,0"/>
+    </Border>
+
     <!-- Page -->
-    <ContentControl Grid.Row="1" Content="{Binding ActivePage}" Background="{DynamicResource Brush.Window}">
+    <ContentControl Grid.Row="2" Content="{Binding ActivePage}" Background="{DynamicResource Brush.Window}">
       <ContentControl.DataTemplates>
         <DataTemplate DataType="vm:LauncherPage">
           <v:LauncherPage/>
@@ -124,7 +196,7 @@
     </ContentControl>
 
     <!-- Command Palette -->
-    <Border Grid.Row="0" Grid.RowSpan="2"
+    <Border Grid.Row="0" Grid.RowSpan="3"
             Background="Transparent"
             IsVisible="{Binding CommandPalette, Converter={x:Static ObjectConverters.IsNotNull}}"
             PointerPressed="OnCloseCommandPalette">

@@ -12,6 +12,9 @@ namespace GetHub.ViewModels
 {
     public class Launcher : ObservableObject
     {
+        public const string GroupAll = "All";
+        public const string GroupUngrouped = "Ungrouped";
+
         private static readonly string AppVersion = GetAppVersion();
 
         private static string GetAppVersion()
@@ -54,12 +57,86 @@ namespace GetHub.ViewModels
             set => SetProperty(ref _commandPalette, value);
         }
 
+        public AvaloniaList<LauncherGroup> Groups
+        {
+            get;
+            private set;
+        } = new AvaloniaList<LauncherGroup>();
+
+        public void MoveGroup(string fromName, string toName)
+        {
+            if (string.IsNullOrEmpty(fromName) || string.IsNullOrEmpty(toName) || fromName == toName)
+                return;
+            if (fromName == GroupAll || fromName == GroupUngrouped || toName == GroupAll || toName == GroupUngrouped)
+                return;
+
+            var roots = Preferences.Instance.RepositoryNodes;
+            RepositoryNode fromNode = null, toNode = null;
+            foreach (var n in roots)
+            {
+                if (n.IsRepository) continue;
+                if (n.Name == fromName) fromNode = n;
+                else if (n.Name == toName) toNode = n;
+            }
+            if (fromNode == null || toNode == null)
+                return;
+
+            var fromIdx = roots.IndexOf(fromNode);
+            var toIdx = roots.IndexOf(toNode);
+            if (fromIdx < 0 || toIdx < 0)
+                return;
+
+            roots.RemoveAt(fromIdx);
+            roots.Insert(toIdx, fromNode);
+
+            Preferences.Instance.Save();
+            RefreshGroups();
+        }
+
+        public void SetGroupColor(string groupName, int bookmark)
+        {
+            if (string.IsNullOrEmpty(groupName) || groupName == GroupAll || groupName == GroupUngrouped)
+                return;
+
+            foreach (var node in Preferences.Instance.RepositoryNodes)
+            {
+                if (!node.IsRepository && node.Name == groupName)
+                {
+                    node.Bookmark = bookmark;
+                    break;
+                }
+            }
+            foreach (var g in Groups)
+            {
+                if (g.Name == groupName)
+                {
+                    g.Bookmark = bookmark;
+                    break;
+                }
+            }
+            Preferences.Instance.Save();
+        }
+
+        public string ActiveGroup
+        {
+            get => _activeGroup;
+            set
+            {
+                if (SetProperty(ref _activeGroup, value))
+                {
+                    OpenGroupRepositories(value);
+                    ApplyGroupFilter();
+                }
+            }
+        }
+
         public Launcher(string startupRepo)
         {
             Models.Notification.Raised += DispatchNotification;
             _ignoreIndexChange = true;
 
             Pages = new AvaloniaList<LauncherPage>();
+            Pages.CollectionChanged += (_, _) => RefreshGroups();
             AddNewTab();
 
             var pref = Preferences.Instance;
@@ -469,6 +546,103 @@ namespace GetHub.ViewModels
 
             Title = builder.ToString();
             CommandPalette = null;
+
+            if (_activeGroup != GroupAll && _activePage != null)
+            {
+                var pageGroup = _activePage.GetGroupName();
+                if (pageGroup != _activeGroup)
+                    ActiveGroup = pageGroup;
+            }
+        }
+
+        public void RefreshGroups()
+        {
+            var built = new System.Collections.Generic.List<LauncherGroup>
+            {
+                new LauncherGroup(GroupAll, 0, true)
+            };
+            foreach (var node in Preferences.Instance.RepositoryNodes)
+            {
+                if (!node.IsRepository && !string.IsNullOrEmpty(node.Name))
+                    built.Add(new LauncherGroup(node.Name, node.Bookmark, false));
+            }
+
+            foreach (var page in Pages)
+            {
+                if (page.GetGroupName() == GroupUngrouped)
+                {
+                    built.Add(new LauncherGroup(GroupUngrouped, 0, true));
+                    break;
+                }
+            }
+
+            Groups.Clear();
+            foreach (var g in built)
+                Groups.Add(g);
+
+            var names = new System.Collections.Generic.HashSet<string>();
+            foreach (var g in Groups) names.Add(g.Name);
+            if (!names.Contains(_activeGroup))
+                _activeGroup = GroupAll;
+
+            ApplyGroupFilter();
+            OnPropertyChanged(nameof(ActiveGroup));
+        }
+
+        private void ApplyGroupFilter()
+        {
+            var all = _activeGroup == GroupAll;
+            foreach (var page in Pages)
+                page.IsInActiveGroup = all || page.GetGroupName() == _activeGroup;
+        }
+
+        private void OpenGroupRepositories(string groupName)
+        {
+            if (string.IsNullOrEmpty(groupName) || groupName == GroupAll || groupName == GroupUngrouped)
+                return;
+
+            RepositoryNode folder = null;
+            foreach (var node in Preferences.Instance.RepositoryNodes)
+            {
+                if (!node.IsRepository && node.Name == groupName)
+                {
+                    folder = node;
+                    break;
+                }
+            }
+            if (folder == null)
+                return;
+
+            _ignoreIndexChange = true;
+            try
+            {
+                OpenRepoDescendants(folder);
+            }
+            finally
+            {
+                _ignoreIndexChange = false;
+            }
+        }
+
+        private void OpenRepoDescendants(RepositoryNode node)
+        {
+            if (node.IsRepository)
+            {
+                if (!Directory.Exists(node.Id))
+                    return;
+
+                foreach (var page in Pages)
+                {
+                    if (page.Node.Id == node.Id)
+                        return;
+                }
+
+                OpenRepositoryInTab(node, null);
+                return;
+            }
+
+            foreach (var sub in node.SubNodes)
+                OpenRepoDescendants(sub);
         }
 
         private Workspace _activeWorkspace;
@@ -476,5 +650,6 @@ namespace GetHub.ViewModels
         private bool _ignoreIndexChange;
         private string _title = string.Empty;
         private ICommandPalette _commandPalette;
+        private string _activeGroup = GroupAll;
     }
 }

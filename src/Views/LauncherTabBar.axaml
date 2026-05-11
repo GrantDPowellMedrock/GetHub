@@ -46,6 +46,7 @@
               <v:LauncherTabSizeBox UseFixedWidth="{Binding Source={x:Static vm:Preferences.Instance}, Path=UseFixedTabWidth}" Height="30"
                                     Padding="0,2,0,0"
                                     Background="Transparent"
+                                    IsVisible="{Binding IsInActiveGroup}"
                                     PointerPressed="OnPointerPressedTab"
                                     PointerMoved="OnPointerMovedOverTab"
                                     PointerReleased="OnPointerReleasedTab"

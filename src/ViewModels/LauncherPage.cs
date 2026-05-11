@@ -31,6 +31,20 @@ namespace GetHub.ViewModels
             set => SetProperty(ref _popup, value);
         }
 
+        public bool IsInActiveGroup
+        {
+            get => _isInActiveGroup;
+            set => SetProperty(ref _isInActiveGroup, value);
+        }
+
+        public string GetGroupName()
+        {
+            if (_node == null || !_node.IsRepository)
+                return Launcher.GroupAll;
+            var group = Preferences.Instance.FindGroupRoot(_node.Id);
+            return group?.Name ?? Launcher.GroupUngrouped;
+        }
+
         public AvaloniaList<Models.Notification> Notifications
         {
             get;
@@ -118,5 +132,6 @@ namespace GetHub.ViewModels
         private object _data = null;
         private Models.DirtyState _dirtyState = Models.DirtyState.None;
         private Popup _popup = null;
+        private bool _isInActiveGroup = true;
     }
 }

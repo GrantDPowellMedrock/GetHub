@@ -570,6 +570,31 @@ namespace GetHub.ViewModels
             return FindNodeRecursive(id, RepositoryNodes);
         }
 
+        public RepositoryNode FindGroupRoot(string id)
+        {
+            foreach (var root in RepositoryNodes)
+            {
+                if (root.IsRepository)
+                    continue;
+
+                if (ContainsRecursive(root, id))
+                    return root;
+            }
+            return null;
+        }
+
+        private bool ContainsRecursive(RepositoryNode node, string id)
+        {
+            if (node.Id == id)
+                return true;
+            foreach (var sub in node.SubNodes)
+            {
+                if (ContainsRecursive(sub, id))
+                    return true;
+            }
+            return false;
+        }
+
         public RepositoryNode FindOrAddNodeByRepositoryPath(string repo, RepositoryNode parent, bool shouldMoveNode, bool save = true)
         {
             var normalized = repo.Replace('\\', '/').TrimEnd('/');

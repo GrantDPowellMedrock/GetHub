@@ -3,6 +3,7 @@
 param(
     [switch]$Zip,
     [switch]$Run,
+    [switch]$NoRelaunch,
     [string]$Runtime = "win-x64"
 )
 
@@ -19,11 +20,24 @@ $tempDataBackup = Join-Path $env:TEMP "GetHub_data_backup_$([Guid]::NewGuid().To
 if (-not (Test-Path $dotnet))        { throw ".NET SDK not found at $dotnet" }
 if (-not (Test-Path $projectCsproj)) { throw "Project not found: $projectCsproj" }
 
-# Refuse to build while GetHub is running (locks DLLs)
+# If GetHub is running, close it (will optionally relaunch after build)
+$wasRunning = $false
 $running = Get-Process -Name GetHub -ErrorAction SilentlyContinue
 if ($running) {
-    $paths = $running | Select-Object -ExpandProperty Path -Unique
-    throw "GetHub.exe is running ($($paths -join ', ')). Close it first."
+    $wasRunning = $true
+    Write-Host "[stop] closing running GetHub.exe..." -ForegroundColor Yellow
+    $running | ForEach-Object { $_.CloseMainWindow() | Out-Null }
+    # Give it up to 5s to exit gracefully, then kill
+    $deadline = (Get-Date).AddSeconds(5)
+    while ((Get-Date) -lt $deadline -and (Get-Process -Name GetHub -ErrorAction SilentlyContinue)) {
+        Start-Sleep -Milliseconds 200
+    }
+    $stillUp = Get-Process -Name GetHub -ErrorAction SilentlyContinue
+    if ($stillUp) {
+        Write-Host "[stop] force-killing GetHub.exe (didn't exit gracefully)" -ForegroundColor DarkYellow
+        $stillUp | Stop-Process -Force
+        Start-Sleep -Milliseconds 300
+    }
 }
 
 # --- preserve user data across rebuilds ---
@@ -40,20 +54,31 @@ if (Test-Path $distDir) {
 }
 
 Write-Host "[build] GetHub v$version ($Runtime) -> GetHub_Dist" -ForegroundColor Cyan
-& $dotnet publish $projectCsproj `
-    -c Release `
-    -r $Runtime `
-    --self-contained `
-    -p:DisableAOT=true `
-    -p:DisableUpdateDetection=true `
-    -p:PublishTrimmed=true `
-    -p:PublishSingleFile=true `
-    -p:IncludeNativeLibrariesForSelfExtract=true `
-    -p:EnableCompressionInSingleFile=true `
-    -o $distDir `
-    --nologo `
-    -v minimal
-if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed (exit $LASTEXITCODE)" }
+try {
+    & $dotnet publish $projectCsproj `
+        -c Release `
+        -r $Runtime `
+        --self-contained `
+        -p:DisableAOT=true `
+        -p:DisableUpdateDetection=true `
+        -p:PublishTrimmed=true `
+        -p:PublishSingleFile=true `
+        -p:IncludeNativeLibrariesForSelfExtract=true `
+        -p:EnableCompressionInSingleFile=true `
+        -o $distDir `
+        --nologo `
+        -v minimal
+    if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed (exit $LASTEXITCODE)" }
+}
+catch {
+    # Build failed: restore the data backup so user prefs aren't stranded in %TEMP%
+    if ($hadData -and (Test-Path $tempDataBackup)) {
+        Write-Host "[preserve] build failed - restoring data/ folder before exit" -ForegroundColor Yellow
+        if (-not (Test-Path $distDir)) { New-Item -ItemType Directory -Path $distDir | Out-Null }
+        Move-Item -LiteralPath $tempDataBackup -Destination $dataDir
+    }
+    throw
+}
 
 # strip pdbs
 Get-ChildItem -Path $distDir -Filter *.pdb -Recurse | Remove-Item -Force
@@ -92,7 +117,9 @@ if ($Zip) {
     Write-Host "[zip] done ($zipSize)" -ForegroundColor Green
 }
 
-if ($Run) {
-    Write-Host "[run] launching GetHub.exe" -ForegroundColor Cyan
+$shouldLaunch = $Run -or ($wasRunning -and -not $NoRelaunch)
+if ($shouldLaunch) {
+    $reason = if ($Run) { "run" } else { "relaunch" }
+    Write-Host "[$reason] launching GetHub.exe" -ForegroundColor Cyan
     Start-Process -FilePath $exePath
 }

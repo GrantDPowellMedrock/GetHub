@@ -19,6 +19,9 @@ namespace GetHub.Converters
         public static readonly FuncValueConverter<int, bool> IsNotOne =
             new(v => v != 1);
 
+        public static readonly FuncValueConverter<int, bool> IsGreaterThanOne =
+            new(v => v > 1);
+
         public static readonly FuncValueConverter<int, Thickness> ToTreeMargin =
             new(v => new Thickness(v * 16, 0, 0, 0));
 
