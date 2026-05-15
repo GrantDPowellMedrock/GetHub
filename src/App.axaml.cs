@@ -508,11 +508,13 @@ namespace GetHub
             {
                 try
                 {
-                    // Fetch latest release information.
+                    // Fetch latest release information from the GitHub Releases API.
                     using var client = new HttpClient();
                     client.Timeout = TimeSpan.FromSeconds(5);
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("GetHub");
+                    client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
 
-                    var data = await client.GetStringAsync("https://gethub-scm.github.io/data/version.json");
+                    var data = await client.GetStringAsync("https://api.github.com/repos/GrantDPowellMedrock/GetHub/releases/latest");
                     var ver = JsonSerializer.Deserialize(data, JsonCodeGen.Default.Version);
                     if (ver == null)
                         return;

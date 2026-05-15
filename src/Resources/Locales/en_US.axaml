@@ -4,7 +4,10 @@
   <x:String x:Key="Text.About.Menu" xml:space="preserve">About GetHub</x:String>
   <x:String x:Key="Text.About.ReleaseDate" xml:space="preserve">Release Date: {0}</x:String>
   <x:String x:Key="Text.About.ReleaseNotes" xml:space="preserve">Release Notes</x:String>
-  <x:String x:Key="Text.About.SubTitle" xml:space="preserve">Opensource &amp; Free Git GUI Client</x:String>
+  <x:String x:Key="Text.About.SubTitle" xml:space="preserve">A free Git GUI client — forked from SourceGit with GitKraken-style enhancements.</x:String>
+  <x:String x:Key="Text.About.ForkLine" xml:space="preserve">Forked from</x:String>
+  <x:String x:Key="Text.About.UpstreamName" xml:space="preserve">sourcegit-scm/sourcegit</x:String>
+  <x:String x:Key="Text.About.Features" xml:space="preserve">Adds: group tabs with color coding, drag-to-reorder, per-tab ahead/behind indicators, &quot;Open in Zed&quot; shortcut, portable single-file build, and other quality-of-life tweaks.</x:String>
   <x:String x:Key="Text.AddToIgnore" xml:space="preserve">Add File(s) To Ignore</x:String>
   <x:String x:Key="Text.AddToIgnore.Pattern" xml:space="preserve">Pattern:</x:String>
   <x:String x:Key="Text.AddToIgnore.Storage" xml:space="preserve">Storage File:</x:String>

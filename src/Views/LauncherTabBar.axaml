@@ -80,7 +80,7 @@
 
                   <Grid Grid.Column="1"
                         HorizontalAlignment="Center" VerticalAlignment="Center"
-                        ColumnDefinitions="Auto,*"
+                        ColumnDefinitions="Auto,*,Auto"
                         IsHitTestVisible="False"
                         IsVisible="{Binding Node.IsRepository}">
                     <Ellipse Grid.Column="0"
@@ -96,6 +96,36 @@
                                TextAlignment="Center"
                                Text="{Binding Node.Name}"
                                IsHitTestVisible="False"/>
+
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="6,0,0,0"
+                                IsVisible="{Binding IsTrackStatusVisible}">
+                      <StackPanel Orientation="Horizontal"
+                                  VerticalAlignment="Center"
+                                  IsVisible="{Binding AheadCount, Converter={x:Static c:IntConverters.IsGreaterThanZero}}">
+                        <Path Width="8" Height="8" VerticalAlignment="Center"
+                              Data="{StaticResource Icons.Up}" Fill="{DynamicResource Brush.FG1}"/>
+                        <TextBlock Margin="2,0,0,0"
+                                   VerticalAlignment="Center"
+                                   FontSize="10"
+                                   Foreground="{DynamicResource Brush.FG1}"
+                                   Text="{Binding AheadCount}"/>
+                      </StackPanel>
+                      <StackPanel Orientation="Horizontal"
+                                  Margin="4,0,0,0"
+                                  VerticalAlignment="Center"
+                                  IsVisible="{Binding BehindCount, Converter={x:Static c:IntConverters.IsGreaterThanZero}}">
+                        <Path Width="8" Height="8" VerticalAlignment="Center"
+                              Data="{StaticResource Icons.Down}" Fill="{DynamicResource Brush.FG1}"/>
+                        <TextBlock Margin="2,0,0,0"
+                                   VerticalAlignment="Center"
+                                   FontSize="10"
+                                   Foreground="{DynamicResource Brush.FG1}"
+                                   Text="{Binding BehindCount}"/>
+                      </StackPanel>
+                    </StackPanel>
                   </Grid>
 
                   <TextBlock Grid.Column="1"

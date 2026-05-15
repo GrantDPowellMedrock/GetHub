@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -16,7 +17,58 @@ namespace GetHub.ViewModels
         public object Data
         {
             get => _data;
-            set => SetProperty(ref _data, value);
+            set
+            {
+                var oldRepo = _data as Repository;
+                if (SetProperty(ref _data, value))
+                {
+                    if (oldRepo != null)
+                        oldRepo.PropertyChanged -= OnRepoPropertyChanged;
+                    if (_data is Repository newRepo)
+                    {
+                        newRepo.PropertyChanged += OnRepoPropertyChanged;
+                        RefreshTrackStatus(newRepo);
+                    }
+                    else
+                    {
+                        AheadCount = 0;
+                        BehindCount = 0;
+                        IsTrackStatusVisible = false;
+                    }
+                }
+            }
+        }
+
+        public int AheadCount
+        {
+            get => _aheadCount;
+            private set => SetProperty(ref _aheadCount, value);
+        }
+
+        public int BehindCount
+        {
+            get => _behindCount;
+            private set => SetProperty(ref _behindCount, value);
+        }
+
+        public bool IsTrackStatusVisible
+        {
+            get => _isTrackStatusVisible;
+            private set => SetProperty(ref _isTrackStatusVisible, value);
+        }
+
+        private void OnRepoPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Repository.CurrentBranch) && sender is Repository repo)
+                RefreshTrackStatus(repo);
+        }
+
+        private void RefreshTrackStatus(Repository repo)
+        {
+            var branch = repo.CurrentBranch;
+            AheadCount = branch?.Ahead?.Count ?? 0;
+            BehindCount = branch?.Behind?.Count ?? 0;
+            IsTrackStatusVisible = AheadCount > 0 || BehindCount > 0;
         }
 
         public Models.DirtyState DirtyState
@@ -63,7 +115,7 @@ namespace GetHub.ViewModels
         public LauncherPage(RepositoryNode node, Repository repo)
         {
             _node = node;
-            _data = repo;
+            Data = repo;
         }
 
         public void ClearNotifications()
@@ -133,5 +185,8 @@ namespace GetHub.ViewModels
         private Models.DirtyState _dirtyState = Models.DirtyState.None;
         private Popup _popup = null;
         private bool _isInActiveGroup = true;
+        private int _aheadCount;
+        private int _behindCount;
+        private bool _isTrackStatusVisible;
     }
 }

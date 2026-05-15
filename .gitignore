@@ -47,3 +47,6 @@ build/
 
 GetHub_Dist/
 GetHub_Dist_*.zip
+
+# local dev convenience (machine-specific paths)
+.claude/

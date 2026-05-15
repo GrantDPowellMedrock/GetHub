@@ -21,20 +21,19 @@
     </Grid.RowDefinitions>
 
     <Grid.Styles>
-      <Style Selector="Button.group_tab">
+      <Style Selector="Border.group_tab">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0,0,0,2"/>
-        <Setter Property="CornerRadius" Value="0"/>
-        <Setter Property="Foreground" Value="{DynamicResource Brush.FG2}"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource Brush.FG2}"/>
+        <Setter Property="Cursor" Value="Hand"/>
       </Style>
-      <Style Selector="Button.group_tab:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="Transparent"/>
+      <Style Selector="Border.group_tab:pointerover">
         <Setter Property="TextElement.Foreground" Value="{DynamicResource Brush.FG1}"/>
       </Style>
-      <Style Selector="Button.group_tab.active">
+      <Style Selector="Border.group_tab.active">
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Brush.FG1}"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource Brush.FG1}"/>
       </Style>
     </Grid.Styles>
 
@@ -139,11 +138,10 @@
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate DataType="vm:LauncherGroup">
-              <Button Classes="group_tab"
+              <Border Classes="group_tab"
                       Margin="0,0,4,0"
                       Padding="10,4"
                       VerticalAlignment="Stretch"
-                      Click="OnSelectGroup"
                       ContextRequested="OnGroupContextRequested"
                       PointerPressed="OnGroupPointerPressed"
                       PointerMoved="OnGroupPointerMoved"
@@ -166,7 +164,7 @@
                         IsVisible="{Binding Bookmark, Converter={x:Static c:IntConverters.IsGreaterThanZero}}"/>
                   <TextBlock Text="{Binding Name}" FontSize="12" VerticalAlignment="Center"/>
                 </StackPanel>
-              </Button>
+              </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>

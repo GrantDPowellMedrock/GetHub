@@ -77,7 +77,7 @@ namespace GetHub.Views
 
         private void GotoDownload(object _, RoutedEventArgs e)
         {
-            Native.OS.OpenBrowser("https://github.com/gethub-scm/gethub/releases/latest");
+            Native.OS.OpenBrowser("https://github.com/GrantDPowellMedrock/GetHub/releases/latest");
             e.Handled = true;
         }
 

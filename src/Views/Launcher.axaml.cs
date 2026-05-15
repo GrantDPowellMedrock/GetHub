@@ -424,25 +424,26 @@ namespace GetHub.Views
             e.Handled = true;
         }
 
-        private void OnSelectGroup(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button { Tag: string name } && DataContext is ViewModels.Launcher vm)
-                vm.ActiveGroup = name;
-            e.Handled = true;
-        }
-
         private void OnGroupPointerPressed(object sender, PointerPressedEventArgs e)
         {
-            if (sender is Button btn && btn.DataContext is ViewModels.LauncherGroup g && !g.IsPseudo)
+            if (sender is Border bd && bd.DataContext is ViewModels.LauncherGroup)
             {
                 _pressedGroup = true;
                 _startDragGroup = false;
-                _pressedGroupPosition = e.GetPosition(btn);
+                _pressedGroupPosition = e.GetPosition(bd);
             }
         }
 
-        private void OnGroupPointerReleased(object _1, PointerReleasedEventArgs _2)
+        private void OnGroupPointerReleased(object sender, PointerReleasedEventArgs e)
         {
+            // Treat as click-to-select if no drag started
+            if (_pressedGroup && !_startDragGroup &&
+                sender is Border bd && bd.DataContext is ViewModels.LauncherGroup g &&
+                DataContext is ViewModels.Launcher vm &&
+                e.InitialPressMouseButton == MouseButton.Left)
+            {
+                vm.ActiveGroup = g.Name;
+            }
             _pressedGroup = false;
             _startDragGroup = false;
         }
@@ -450,10 +451,10 @@ namespace GetHub.Views
         private async void OnGroupPointerMoved(object sender, PointerEventArgs e)
         {
             if (_pressedGroup && !_startDragGroup &&
-                sender is Button btn &&
-                btn.DataContext is ViewModels.LauncherGroup g && !g.IsPseudo)
+                sender is Border bd &&
+                bd.DataContext is ViewModels.LauncherGroup g && !g.IsPseudo)
             {
-                var delta = e.GetPosition(btn) - _pressedGroupPosition;
+                var delta = e.GetPosition(bd) - _pressedGroupPosition;
                 if (delta.X * delta.X + delta.Y * delta.Y < 64)
                     return;
 
@@ -469,7 +470,7 @@ namespace GetHub.Views
         {
             if (e.DataTransfer.TryGetValue(_dndGroupFormat) is not { Length: > 0 } fromName)
                 return;
-            if (sender is not Button btn || btn.DataContext is not ViewModels.LauncherGroup to || to.IsPseudo)
+            if (sender is not Border bd || bd.DataContext is not ViewModels.LauncherGroup to || to.IsPseudo)
                 return;
             if (DataContext is not ViewModels.Launcher vm)
                 return;
@@ -482,7 +483,7 @@ namespace GetHub.Views
 
         private void OnGroupContextRequested(object sender, ContextRequestedEventArgs e)
         {
-            if (sender is not Button btn || btn.DataContext is not ViewModels.LauncherGroup group)
+            if (sender is not Border bd || bd.DataContext is not ViewModels.LauncherGroup group)
             {
                 e.Handled = true;
                 return;
@@ -520,7 +521,7 @@ namespace GetHub.Views
                 menu.Items.Add(item);
             }
 
-            menu.Open(btn);
+            menu.Open(bd);
             e.Handled = true;
         }
 

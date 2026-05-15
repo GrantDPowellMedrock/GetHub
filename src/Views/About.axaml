@@ -3,7 +3,7 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:v="using:GetHub.Views"
-                    mc:Ignorable="d" d:DesignWidth="520" d:DesignHeight="230"
+                    mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="320"
                     x:Class="GetHub.Views.About"
                     x:Name="ThisControl"
                     Icon="/App.ico"
@@ -56,28 +56,36 @@
           </Border>
         </StackPanel>
 
-        <Border Margin="0,4,0,0">
-          <TextBlock Text="{DynamicResource Text.About.SubTitle}" FontSize="16" TextWrapping="Wrap"/>
+        <Border Margin="0,4,0,0" MaxWidth="380">
+          <TextBlock Text="{DynamicResource Text.About.SubTitle}" FontSize="14" TextWrapping="Wrap"/>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+          <TextBlock Text="{DynamicResource Text.About.ForkLine}"
+                     Foreground="{DynamicResource Brush.FG2}"
+                     VerticalAlignment="Center"/>
+          <TextBlock Margin="4,0,0,0"
+                     Text="{DynamicResource Text.About.UpstreamName}"
+                     Foreground="{DynamicResource Brush.Accent}"
+                     TextDecorations="Underline"
+                     Cursor="Hand"
+                     VerticalAlignment="Center"
+                     PointerPressed="OnVisitUpstream"/>
+        </StackPanel>
+
+        <Border Margin="0,8,0,0" MaxWidth="380">
+          <TextBlock Text="{DynamicResource Text.About.Features}"
+                     Foreground="{DynamicResource Brush.FG2}"
+                     FontSize="12"
+                     TextWrapping="Wrap"/>
         </Border>
 
         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-          <Button Width="18" Height="18" Classes="icon_button" Click="OnVisitWebsite" ToolTip.Tip="https://gethub-scm.github.io/">
-            <Path Width="16" Height="16" Data="{StaticResource Icons.Remotes}"/>
-          </Button>
-
-          <Button Width="18" Height="18" Margin="8,0,0,0" Classes="icon_button" Click="OnVisitSourceCode" ToolTip.Tip="https://github.com/gethub-scm/gethub">
+          <Button Width="18" Height="18" Classes="icon_button" Click="OnVisitSourceCode" ToolTip.Tip="https://github.com/GrantDPowellMedrock/GetHub">
             <Path Width="16" Height="16" Data="{StaticResource Icons.GitHub}"/>
           </Button>
         </StackPanel>
 
-        <TextBlock x:Name="TxtReleaseDate" Margin="0,28,0,0" Foreground="{DynamicResource Brush.FG2}"/>
-        
-        <StackPanel x:Name="PnlGitSourceRevision" Orientation="Horizontal" Margin="0,2,0,0" IsVisible="False">
-          <TextBlock Foreground="{DynamicResource Brush.FG2}" Text="{DynamicResource Text.About.GitSourceRevision}"/>
-          <SelectableTextBlock x:Name="TxtGitSourceRevision" Margin="4,0,0,0" Foreground="{DynamicResource Brush.FG2}"/>
-        </StackPanel>
-
-        <TextBlock x:Name="TxtCopyright" Margin="0,2,0,0" Foreground="{DynamicResource Brush.FG2}"/>
       </StackPanel>
     </StackPanel>
   </StackPanel>
