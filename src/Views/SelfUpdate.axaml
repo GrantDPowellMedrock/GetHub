@@ -72,12 +72,12 @@
               <StackPanel Margin="0,8,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Classes="flat primary"
                         Height="30"
-                        Click="GotoDownload"
+                        Click="DoSelfUpdate"
                         HorizontalContentAlignment="Center"
                         VerticalContentAlignment="Center">
                   <StackPanel Orientation="Horizontal">
                     <Path Width="12" Height="12" Data="{StaticResource Icons.Pull}" Fill="{DynamicResource AccentButtonForeground}"/>
-                    <TextBlock Text="{DynamicResource Text.SelfUpdate.GotoDownload}" Margin="8,0,0,0" Foreground="{DynamicResource AccentButtonForeground}"/>
+                    <TextBlock Text="Update Now" Margin="8,0,0,0" Foreground="{DynamicResource AccentButtonForeground}"/>
                   </StackPanel>
                 </Button>
 

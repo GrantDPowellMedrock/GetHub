@@ -81,6 +81,48 @@ namespace GetHub.Views
             e.Handled = true;
         }
 
+        private async void DoSelfUpdate(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            if (sender is not Button btn || btn.DataContext is not Models.Version ver)
+                return;
+
+            // Non-Windows: fall back to opening the releases page.
+            if (!Models.SelfUpdater.IsSupported)
+            {
+                Native.OS.OpenBrowser("https://github.com/GrantDPowellMedrock/GetHub/releases/latest");
+                return;
+            }
+
+            var status = new TextBlock
+            {
+                Text = "Starting update…",
+                Foreground = Avalonia.Media.Brushes.White,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            };
+
+            btn.IsEnabled = false;
+            btn.Content = status;
+
+            try
+            {
+                ViewModels.Preferences.Instance.Save();
+                await Models.SelfUpdater.RunAsync(
+                    ver,
+                    msg => Avalonia.Threading.Dispatcher.UIThread.Post(() => status.Text = msg),
+                    System.Threading.CancellationToken.None);
+
+                // On success (Windows) RunAsync exits the process; we won't get here.
+            }
+            catch (System.Exception ex)
+            {
+                Native.OS.LogException(ex);
+                btn.IsEnabled = true;
+                status.Text = $"Update failed: {ex.Message}";
+            }
+        }
+
         private void IgnoreThisVersion(object sender, RoutedEventArgs e)
         {
             if (sender is Button { DataContext: Models.Version ver })

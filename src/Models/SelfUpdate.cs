@@ -1,9 +1,19 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace GetHub.Models
 {
+    public class ReleaseAsset
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("browser_download_url")]
+        public string DownloadUrl { get; set; }
+    }
+
     public class Version
     {
         [JsonPropertyName("name")]
@@ -17,6 +27,9 @@ namespace GetHub.Models
 
         [JsonPropertyName("body")]
         public string Body { get; set; }
+
+        [JsonPropertyName("assets")]
+        public List<ReleaseAsset> Assets { get; set; } = new List<ReleaseAsset>();
 
         [JsonIgnore]
         public System.Version CurrentVersion { get; }
