@@ -2,6 +2,7 @@
 [CmdletBinding()]
 param(
     [switch]$Zip,
+    [switch]$Dist,
     [switch]$Run,
     [switch]$NoRelaunch,
     [string]$Runtime = "win-x64"
@@ -107,13 +108,29 @@ $size = "{0:N1} MB" -f ((Get-ChildItem $distDir -Recurse -File | Measure-Object 
 Write-Host "[done] $distDir ($size)" -ForegroundColor Green
 Write-Host "[portable] preferences live in $dataDir" -ForegroundColor DarkGray
 
-if ($Zip) {
-    $zipPath = Join-Path $repoRoot "GetHub_Dist_${version}_${Runtime}.zip"
-    if (Test-Path $zipPath) { Remove-Item -Force $zipPath }
-    Write-Host "[zip] $zipPath" -ForegroundColor Cyan
-    Compress-Archive -Path $distDir -DestinationPath $zipPath -CompressionLevel Optimal
+# -Dist / -Zip: produce a CLEAN shareable zip with NO personal data.
+# The dist staging contains only GetHub.exe + an empty data/ folder (portable
+# mode). Your preference.json / avatars are NEVER included.
+if ($Zip -or $Dist) {
+    $zipPath = Join-Path $repoRoot "GetHub_${version}_${Runtime}.zip"
+    $stageDir = Join-Path $env:TEMP "GetHub_dist_$([Guid]::NewGuid().ToString('N'))"
+    try {
+        New-Item -ItemType Directory -Path "$stageDir\GetHub" | Out-Null
+        Copy-Item $exePath -Destination "$stageDir\GetHub\GetHub.exe"
+        New-Item -ItemType Directory -Path "$stageDir\GetHub\data" | Out-Null
+        Set-Content -Path "$stageDir\GetHub\data\.keep" `
+            -Value "Portable mode: GetHub stores all settings in this folder."
+
+        if (Test-Path $zipPath) { Remove-Item -Force $zipPath }
+        Write-Host "[dist] building clean shareable zip (no personal data)" -ForegroundColor Cyan
+        Compress-Archive -Path "$stageDir\GetHub" -DestinationPath $zipPath -CompressionLevel Optimal
+    }
+    finally {
+        if (Test-Path $stageDir) { Remove-Item -Recurse -Force $stageDir }
+    }
     $zipSize = "{0:N1} MB" -f ((Get-Item $zipPath).Length / 1MB)
-    Write-Host "[zip] done ($zipSize)" -ForegroundColor Green
+    Write-Host "[dist] $zipPath ($zipSize)" -ForegroundColor Green
+    Write-Host "[dist] contents: GetHub/GetHub.exe + empty GetHub/data/" -ForegroundColor DarkGray
 }
 
 $shouldLaunch = $Run -or ($wasRunning -and -not $NoRelaunch)
