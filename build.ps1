@@ -120,6 +120,26 @@ if ($Zip -or $Dist) {
         New-Item -ItemType Directory -Path "$stageDir\GetHub\data" | Out-Null
         Set-Content -Path "$stageDir\GetHub\data\.keep" `
             -Value "Portable mode: GetHub stores all settings in this folder."
+        Set-Content -Path "$stageDir\GetHub\HOW-TO-OPEN.txt" -Encoding UTF8 -Value @"
+GetHub for Windows
+==================
+
+If the app won't open ("Windows protected your PC", or nothing happens):
+GetHub is not code-signed, so Windows SmartScreen blocks it. To run it:
+
+OPTION 1 - Unblock the ZIP BEFORE extracting (recommended):
+  1. Right-click the downloaded .zip -> Properties
+  2. At the bottom, tick "Unblock" -> OK
+  3. Now extract and run GetHub.exe
+
+OPTION 2 - Allow it at the SmartScreen prompt:
+  1. Double-click GetHub.exe
+  2. On "Windows protected your PC", click "More info"
+  3. Click "Run anyway"
+
+Settings are stored in the "data" folder next to GetHub.exe (portable mode).
+Requires Git for Windows: https://git-scm.com/download/win
+"@
 
         if (Test-Path $zipPath) { Remove-Item -Force $zipPath }
         Write-Host "[dist] building clean shareable zip (no personal data)" -ForegroundColor Cyan
