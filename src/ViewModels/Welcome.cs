@@ -282,7 +282,9 @@ namespace GetHub.ViewModels
                 node.Depth = depth;
                 rows.Add(node);
 
-                if (node.IsRepository || !node.IsExpanded)
+                // Render children for any expanded container, including a
+                // repository that holds nested sub-repositories.
+                if (!node.IsExpanded || node.SubNodes.Count == 0)
                     continue;
 
                 MakeTreeRows(rows, node.SubNodes, depth + 1);

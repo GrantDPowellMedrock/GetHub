@@ -190,7 +190,13 @@ namespace GetHub.ViewModels
             foreach (var node in collection)
             {
                 if (node.Name.Equals(name, StringComparison.Ordinal))
+                {
+                    // The matched node is about to receive a child. If it is a
+                    // repository, it now also acts as a container, so expand it
+                    // to reveal the nested sub-repositories.
+                    node.IsExpanded = true;
                     return node;
+                }
             }
 
             var added = new RepositoryNode()

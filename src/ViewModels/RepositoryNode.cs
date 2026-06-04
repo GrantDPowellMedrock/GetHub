@@ -57,6 +57,15 @@ namespace GetHub.ViewModels
             get => _isRepository && !Directory.Exists(_id);
         }
 
+        // A node is expandable when it is a group, or a repository that itself
+        // contains nested sub-repositories. Lets a repo act as both an openable
+        // repo and a container in the tree.
+        [JsonIgnore]
+        public bool IsContainer
+        {
+            get => !_isRepository || SubNodes.Count > 0;
+        }
+
         [JsonIgnore]
         public int Depth
         {
