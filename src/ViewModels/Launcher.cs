@@ -645,6 +645,50 @@ namespace GetHub.ViewModels
                 OpenRepoDescendants(sub);
         }
 
+        public void OpenGroupInZed(string groupName)
+        {
+            var zed = Native.OS.ExternalTools.Find(x => x.Name.Equals("Zed", StringComparison.Ordinal));
+            if (zed == null)
+            {
+                Models.Notification.Send(string.Empty, "Zed was not found on this system.", true);
+                return;
+            }
+
+            RepositoryNode folder = null;
+            foreach (var node in Preferences.Instance.RepositoryNodes)
+            {
+                if (!node.IsRepository && node.Name == groupName)
+                {
+                    folder = node;
+                    break;
+                }
+            }
+            if (folder == null)
+                return;
+
+            var paths = new System.Collections.Generic.List<string>();
+            CollectRepoPaths(folder, paths);
+            if (paths.Count == 0)
+                return;
+
+            // Open ONE Zed window with every repo added as a workspace root folder.
+            var args = string.Join(" ", paths.ConvertAll(p => p.Quoted()));
+            zed.Launch(args);
+        }
+
+        private void CollectRepoPaths(RepositoryNode node, System.Collections.Generic.List<string> paths)
+        {
+            if (node.IsRepository)
+            {
+                if (Directory.Exists(node.Id) && !paths.Contains(node.Id))
+                    paths.Add(node.Id);
+                return;
+            }
+
+            foreach (var sub in node.SubNodes)
+                CollectRepoPaths(sub, paths);
+        }
+
         private Workspace _activeWorkspace;
         private LauncherPage _activePage;
         private bool _ignoreIndexChange;

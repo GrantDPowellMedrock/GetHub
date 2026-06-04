@@ -497,6 +497,26 @@ namespace GetHub.Views
 
             var menu = new ContextMenu();
 
+            var openInZed = new MenuItem { Header = "Open all in Zed" };
+            try
+            {
+                openInZed.Icon = new Image
+                {
+                    Width = 16,
+                    Height = 16,
+                    Source = new Avalonia.Media.Imaging.Bitmap(
+                        Avalonia.Platform.AssetLoader.Open(
+                            new System.Uri("avares://GetHub/Resources/Images/ExternalToolIcons/zed.png")))
+                };
+            }
+            catch
+            {
+                // icon is optional
+            }
+            openInZed.Click += (_, ev) => { vm.OpenGroupInZed(group.Name); ev.Handled = true; };
+            menu.Items.Add(openInZed);
+            menu.Items.Add(new MenuItem { Header = "-" });
+
             var clear = new MenuItem { Header = "No color" };
             clear.Click += (_, ev) => { vm.SetGroupColor(group.Name, 0); ev.Handled = true; };
             menu.Items.Add(clear);
