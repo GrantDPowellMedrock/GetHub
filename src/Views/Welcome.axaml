@@ -122,7 +122,7 @@
                                                 Focusable="False"
                                                 HorizontalAlignment="Center"
                                                 IsChecked="{Binding IsExpanded, Mode=OneWay}"
-                                                IsVisible="{Binding !IsRepository}"/>
+                                                IsVisible="{Binding IsContainer}"/>
 
               <Path Grid.Column="1"
                     Width="14" Height="14"

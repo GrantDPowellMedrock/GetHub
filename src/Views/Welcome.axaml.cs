@@ -15,7 +15,7 @@ namespace GetHub.Views
         protected override void OnPointerPressed(PointerPressedEventArgs e)
         {
             if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed &&
-                DataContext is ViewModels.RepositoryNode { IsRepository: false } node)
+                DataContext is ViewModels.RepositoryNode { IsContainer: true } node)
                 ViewModels.Welcome.Instance.ToggleNodeIsExpanded(node);
 
             e.Handled = true;
@@ -40,6 +40,12 @@ namespace GetHub.Views
                     if (e.Key == Key.Enter)
                     {
                         node.Open();
+                        e.Handled = true;
+                    }
+                    else if (node.IsContainer &&
+                             ((node.IsExpanded && e.Key == Key.Left) || (!node.IsExpanded && e.Key == Key.Right)))
+                    {
+                        ViewModels.Welcome.Instance.ToggleNodeIsExpanded(node);
                         e.Handled = true;
                     }
                 }
