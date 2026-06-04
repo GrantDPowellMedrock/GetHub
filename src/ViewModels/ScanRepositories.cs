@@ -153,6 +153,11 @@ namespace GetHub.ViewModels
                             outs.Add(normalized);
                     }
 
+                    // Keep scanning inside this repository for nested repositories
+                    // (sub-repos / submodules). The first .git no longer stops descent.
+                    if (depth < 5)
+                        await GetUnmanagedRepositoriesAsync(subdir, outs, opts, depth + 1);
+
                     continue;
                 }
 
