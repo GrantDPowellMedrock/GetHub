@@ -426,12 +426,26 @@ namespace GetHub.Views
 
         private void OnGroupPointerPressed(object sender, PointerPressedEventArgs e)
         {
-            if (sender is Border bd && bd.DataContext is ViewModels.LauncherGroup)
+            if (sender is not Border bd || bd.DataContext is not ViewModels.LauncherGroup group)
+                return;
+
+            // Secondary click = right button, or (macOS) Control+left click. Open the
+            // menu directly here because ContextRequested is unreliable on macOS in
+            // the custom title-bar region.
+            var props = e.GetCurrentPoint(bd).Properties;
+            var isSecondary = props.IsRightButtonPressed ||
+                              (props.IsLeftButtonPressed && e.KeyModifiers.HasFlag(KeyModifiers.Control) && OperatingSystem.IsMacOS());
+            if (isSecondary)
             {
-                _pressedGroup = true;
-                _startDragGroup = false;
-                _pressedGroupPosition = e.GetPosition(bd);
+                if (!group.IsPseudo && DataContext is ViewModels.Launcher vm)
+                    OpenGroupMenu(bd, group, vm);
+                e.Handled = true;
+                return;
             }
+
+            _pressedGroup = true;
+            _startDragGroup = false;
+            _pressedGroupPosition = e.GetPosition(bd);
         }
 
         private void OnGroupPointerReleased(object sender, PointerReleasedEventArgs e)
@@ -483,18 +497,16 @@ namespace GetHub.Views
 
         private void OnGroupContextRequested(object sender, ContextRequestedEventArgs e)
         {
-            if (sender is not Border bd || bd.DataContext is not ViewModels.LauncherGroup group)
+            if (sender is Border bd && bd.DataContext is ViewModels.LauncherGroup group &&
+                !group.IsPseudo && DataContext is ViewModels.Launcher vm)
             {
-                e.Handled = true;
-                return;
+                OpenGroupMenu(bd, group, vm);
             }
+            e.Handled = true;
+        }
 
-            if (group.IsPseudo || DataContext is not ViewModels.Launcher vm)
-            {
-                e.Handled = true;
-                return;
-            }
-
+        private void OpenGroupMenu(Border bd, ViewModels.LauncherGroup group, ViewModels.Launcher vm)
+        {
             var menu = new ContextMenu();
 
             var openInZed = new MenuItem { Header = "Open all in Zed" };
@@ -542,7 +554,6 @@ namespace GetHub.Views
             }
 
             menu.Open(bd);
-            e.Handled = true;
         }
 
         private WindowState _lastWindowState = WindowState.Normal;
