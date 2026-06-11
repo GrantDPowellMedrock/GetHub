@@ -17,6 +17,7 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="{Binding #ThisControl.CaptionHeight}"/>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
@@ -124,10 +125,20 @@
         <Path Width="13" Height="13" Margin="0,2,0,0" Data="{StaticResource Icons.Tabs}"/>
       </Button>
 
-      <!-- Group Tab Strip (filters the page tabs below) -->
-      <ScrollViewer Grid.Column="3"
-                    Margin="6,0,8,0"
-                    VerticalAlignment="Bottom"
+      <!-- Caption Buttons (Windows/Linux) -->
+      <Border Grid.Column="4" Margin="16,0,0,0" IsVisible="{Binding #ThisControl.HasRightCaptionButton}">
+        <v:CaptionButtons Height="30" VerticalAlignment="Top"/>
+      </Border>
+    </Grid>
+
+    <!-- Group Tab Strip (own row, OUTSIDE the macOS native title bar so drag +
+         right-click work; filters the page tabs below) -->
+    <Border Grid.Row="1"
+            Background="{DynamicResource Brush.TitleBar}"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource Brush.Border0}"
+            IsVisible="{Binding Groups.Count, Converter={x:Static c:IntConverters.IsGreaterThanOne}}">
+      <ScrollViewer Margin="8,2"
                     HorizontalScrollBarVisibility="Hidden"
                     VerticalScrollBarVisibility="Disabled">
         <ItemsControl ItemsSource="{Binding Groups}" Height="30">
@@ -169,15 +180,10 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
       </ScrollViewer>
+    </Border>
 
-      <!-- Caption Buttons (Windows/Linux) -->
-      <Border Grid.Column="4" Margin="16,0,0,0" IsVisible="{Binding #ThisControl.HasRightCaptionButton}">
-        <v:CaptionButtons Height="30" VerticalAlignment="Top"/>
-      </Border>
-    </Grid>
-
-    <!-- Pages Tabs (below title bar, full-width) -->
-    <Border Grid.Row="1"
+    <!-- Pages Tabs (full-width) -->
+    <Border Grid.Row="2"
             Background="{DynamicResource Brush.TitleBar}"
             BorderThickness="0,0,0,1"
             BorderBrush="{DynamicResource Brush.Border0}">
@@ -185,7 +191,7 @@
     </Border>
 
     <!-- Page -->
-    <ContentControl Grid.Row="2" Content="{Binding ActivePage}" Background="{DynamicResource Brush.Window}">
+    <ContentControl Grid.Row="3" Content="{Binding ActivePage}" Background="{DynamicResource Brush.Window}">
       <ContentControl.DataTemplates>
         <DataTemplate DataType="vm:LauncherPage">
           <v:LauncherPage/>
@@ -194,7 +200,7 @@
     </ContentControl>
 
     <!-- Command Palette -->
-    <Border Grid.Row="0" Grid.RowSpan="3"
+    <Border Grid.Row="0" Grid.RowSpan="4"
             Background="Transparent"
             IsVisible="{Binding CommandPalette, Converter={x:Static ObjectConverters.IsNotNull}}"
             PointerPressed="OnCloseCommandPalette">
