@@ -825,37 +825,30 @@ namespace GetHub.ViewModels
                 return;
             }
 
-            RepositoryNode folder = null;
-            foreach (var node in Preferences.Instance.RepositoryNodes)
+            WorkspaceGroup group = null;
+            foreach (var g in _activeWorkspace.Groups)
             {
-                if (!node.IsRepository && node.Name == groupName)
+                if (g.Name == groupName)
                 {
-                    folder = node;
+                    group = g;
                     break;
                 }
             }
-            if (folder == null)
+            if (group == null)
                 return;
 
             var paths = new System.Collections.Generic.List<string>();
-            CollectRepoPaths(folder, paths);
+            foreach (var id in group.RepositoryIds)
+            {
+                if (Directory.Exists(id) && !paths.Contains(id))
+                    paths.Add(id);
+            }
             if (paths.Count == 0)
                 return;
 
             // Open ONE Zed window with every repo added as a workspace root folder.
             var args = string.Join(" ", paths.ConvertAll(p => p.Quoted()));
             zed.Launch(args);
-        }
-
-        private void CollectRepoPaths(RepositoryNode node, System.Collections.Generic.List<string> paths)
-        {
-            // A repository may itself be a container of nested sub-repos, so add
-            // the repo AND keep descending instead of stopping at the first one.
-            if (node.IsRepository && Directory.Exists(node.Id) && !paths.Contains(node.Id))
-                paths.Add(node.Id);
-
-            foreach (var sub in node.SubNodes)
-                CollectRepoPaths(sub, paths);
         }
 
         private Workspace _activeWorkspace;
