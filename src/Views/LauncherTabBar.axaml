@@ -10,7 +10,10 @@
              x:Class="GetHub.Views.LauncherTabBar"
              x:DataType="vm:Launcher"
              x:Name="ThisControl">
-  <Grid ColumnDefinitions="Auto,*,Auto">
+  <Grid ColumnDefinitions="Auto,*,Auto"
+        Background="Transparent"
+        DoubleTapped="MaximizeWindow"
+        PointerPressed="BeginMoveWindow">
     <RepeatButton Grid.Column="0"
                   Classes="icon_button"
                   Width="18" Height="28"

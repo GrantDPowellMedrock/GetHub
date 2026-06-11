@@ -127,10 +127,13 @@
       <!-- Group Tab Strip (filters the page tabs below) -->
       <ScrollViewer Grid.Column="3"
                     Margin="6,0,8,0"
-                    VerticalAlignment="Bottom"
+                    Background="Transparent"
+                    VerticalAlignment="Stretch"
                     HorizontalScrollBarVisibility="Hidden"
-                    VerticalScrollBarVisibility="Disabled">
-        <ItemsControl ItemsSource="{Binding Groups}" Height="30">
+                    VerticalScrollBarVisibility="Disabled"
+                    DoubleTapped="MaximizeFromStrip"
+                    PointerPressed="BeginMoveWindowFromStrip">
+        <ItemsControl ItemsSource="{Binding Groups}" Height="30" VerticalAlignment="Bottom">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
               <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"/>

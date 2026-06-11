@@ -495,6 +495,35 @@ namespace GetHub.Views
             e.Handled = true;
         }
 
+        // Drag/maximize the window from the empty space of the group-tab strip.
+        // The strip overlays the title bar; ignore presses that land on a group
+        // tab so tab select/drag still work.
+        private void BeginMoveWindowFromStrip(object sender, PointerPressedEventArgs e)
+        {
+            if (IsOverGroupTab(e.Source))
+                return;
+            BeginMoveWindow(sender, e);
+        }
+
+        private void MaximizeFromStrip(object sender, TappedEventArgs e)
+        {
+            if (IsOverGroupTab(e.Source))
+                return;
+            MaximizeOrRestoreWindow(sender, e);
+        }
+
+        private static bool IsOverGroupTab(object source)
+        {
+            var v = source as Visual;
+            while (v != null)
+            {
+                if (v is Border b && b.Classes.Contains("group_tab"))
+                    return true;
+                v = v.GetVisualParent();
+            }
+            return false;
+        }
+
         private void OnGroupContextRequested(object sender, ContextRequestedEventArgs e)
         {
             if (sender is Border bd && bd.DataContext is ViewModels.LauncherGroup group &&

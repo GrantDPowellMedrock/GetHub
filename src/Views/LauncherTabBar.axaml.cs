@@ -5,8 +5,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using Avalonia.Styling;
+using Avalonia.VisualTree;
 
 namespace GetHub.Views
 {
@@ -220,6 +222,36 @@ namespace GetHub.Views
         {
             _pressedTab = false;
             _startDragTab = false;
+        }
+
+        // Drag/maximize the window from the empty space of the page-tab bar.
+        // Ignore presses that land on a tab or a button so those keep working.
+        private void BeginMoveWindow(object sender, PointerPressedEventArgs e)
+        {
+            if (IsOverInteractive(e.Source))
+                return;
+            if (this.GetVisualRoot() is ChromelessWindow win)
+                win.BeginMoveWindow(sender, e);
+        }
+
+        private void MaximizeWindow(object sender, TappedEventArgs e)
+        {
+            if (IsOverInteractive(e.Source))
+                return;
+            if (this.GetVisualRoot() is ChromelessWindow win)
+                win.MaximizeOrRestoreWindow(sender, e);
+        }
+
+        private static bool IsOverInteractive(object source)
+        {
+            var v = source as Visual;
+            while (v != null)
+            {
+                if (v is LauncherTabSizeBox or Button or RepeatButton)
+                    return true;
+                v = v.GetVisualParent();
+            }
+            return false;
         }
 
         private async void OnPointerMovedOverTab(object sender, PointerEventArgs e)
