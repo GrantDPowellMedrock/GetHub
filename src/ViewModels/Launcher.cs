@@ -681,12 +681,10 @@ namespace GetHub.ViewModels
 
         private void CollectRepoPaths(RepositoryNode node, System.Collections.Generic.List<string> paths)
         {
-            if (node.IsRepository)
-            {
-                if (Directory.Exists(node.Id) && !paths.Contains(node.Id))
-                    paths.Add(node.Id);
-                return;
-            }
+            // A repository may itself be a container of nested sub-repos, so add
+            // the repo AND keep descending instead of stopping at the first one.
+            if (node.IsRepository && Directory.Exists(node.Id) && !paths.Contains(node.Id))
+                paths.Add(node.Id);
 
             foreach (var sub in node.SubNodes)
                 CollectRepoPaths(sub, paths);
