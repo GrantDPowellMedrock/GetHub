@@ -480,6 +480,16 @@ namespace GetHub.Views
             e.Handled = true;
         }
 
+        private void OnGroupDragOver(object sender, DragEventArgs e)
+        {
+            if (sender is Border { DataContext: ViewModels.LauncherGroup to } && !to.IsPseudo &&
+                (e.DataTransfer.Contains(_dndGroupFormat) || e.DataTransfer.Contains(_dndMainTabFormat)))
+                e.DragEffects = DragDropEffects.Move;
+            else
+                e.DragEffects = DragDropEffects.None;
+            e.Handled = true;
+        }
+
         private void OnGroupDrop(object sender, DragEventArgs e)
         {
             if (sender is not Border bd || bd.DataContext is not ViewModels.LauncherGroup to || to.IsPseudo)
@@ -490,6 +500,10 @@ namespace GetHub.Views
             if (e.DataTransfer.TryGetValue(_dndGroupFormat) is { Length: > 0 } fromName)
             {
                 vm.MoveGroup(fromName, to.Name);
+            }
+            else if (e.DataTransfer.TryGetValue(_dndMainTabFormat) is { Length: > 0 } repoId)
+            {
+                vm.AddRepoToGroup(to.Name, repoId);
             }
 
             _pressedGroup = false;
@@ -667,6 +681,7 @@ namespace GetHub.Views
 
         private WindowState _lastWindowState = WindowState.Normal;
         private static readonly DataFormat<string> _dndGroupFormat = DataFormat.CreateStringApplicationFormat("gethub-dnd-group");
+        private readonly DataFormat<string> _dndMainTabFormat = DataFormat.CreateStringApplicationFormat("gethub-dnd-main-tab");
         private ContextMenu _openGroupMenu;
         private bool _pressedGroup;
         private bool _startDragGroup;

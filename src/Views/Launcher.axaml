@@ -161,6 +161,7 @@
                         PointerMoved="OnGroupPointerMoved"
                         PointerReleased="OnGroupPointerReleased"
                         DragDrop.AllowDrop="True"
+                        DragDrop.DragOver="OnGroupDragOver"
                         DragDrop.Drop="OnGroupDrop"
                         Tag="{Binding Name}">
                   <Classes.active>
