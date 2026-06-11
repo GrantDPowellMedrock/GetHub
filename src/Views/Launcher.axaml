@@ -137,51 +137,62 @@
     <Border Grid.Row="1"
             Background="{DynamicResource Brush.TitleBar}"
             BorderThickness="0,0,0,1"
-            BorderBrush="{DynamicResource Brush.Border0}"
-            IsVisible="{Binding Groups.Count, Converter={x:Static c:IntConverters.IsGreaterThanOne}}">
+            BorderBrush="{DynamicResource Brush.Border0}">
       <ScrollViewer Margin="8,2"
                     Background="Transparent"
                     HorizontalScrollBarVisibility="Hidden"
                     VerticalScrollBarVisibility="Disabled"
                     DoubleTapped="MaximizeFromStrip"
                     PointerPressed="BeginMoveWindowFromStrip">
-        <ItemsControl ItemsSource="{Binding Groups}" Height="30" VerticalAlignment="Bottom">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"/>
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-          <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="vm:LauncherGroup">
-              <Border Classes="group_tab"
-                      Margin="0,0,4,0"
-                      Padding="10,4"
-                      VerticalAlignment="Stretch"
-                      PointerPressed="OnGroupPointerPressed"
-                      PointerMoved="OnGroupPointerMoved"
-                      PointerReleased="OnGroupPointerReleased"
-                      DragDrop.AllowDrop="True"
-                      DragDrop.Drop="OnGroupDrop"
-                      Tag="{Binding Name}">
-                <Classes.active>
-                  <MultiBinding Converter="{x:Static c:MultiObjectConverters.AreEqual}">
-                    <Binding Path="Name"/>
-                    <Binding Path="((vm:Launcher)DataContext).ActiveGroup" ElementName="ThisControl"/>
-                  </MultiBinding>
-                </Classes.active>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                  <Path Width="10" Height="10"
-                        Margin="0,0,6,0"
-                        VerticalAlignment="Center"
-                        Data="{StaticResource Icons.Bookmark}"
-                        Fill="{Binding Bookmark, Converter={x:Static c:IntConverters.ToBookmarkBrush}}"
-                        IsVisible="{Binding Bookmark, Converter={x:Static c:IntConverters.IsGreaterThanZero}}"/>
-                  <TextBlock Text="{Binding Name}" FontSize="12" VerticalAlignment="Center"/>
-                </StackPanel>
-              </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+          <ItemsControl ItemsSource="{Binding Groups}" Height="30" VerticalAlignment="Bottom">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:LauncherGroup">
+                <Border Classes="group_tab"
+                        Margin="0,0,4,0"
+                        Padding="10,4"
+                        VerticalAlignment="Stretch"
+                        PointerPressed="OnGroupPointerPressed"
+                        PointerMoved="OnGroupPointerMoved"
+                        PointerReleased="OnGroupPointerReleased"
+                        DragDrop.AllowDrop="True"
+                        DragDrop.Drop="OnGroupDrop"
+                        Tag="{Binding Name}">
+                  <Classes.active>
+                    <MultiBinding Converter="{x:Static c:MultiObjectConverters.AreEqual}">
+                      <Binding Path="Name"/>
+                      <Binding Path="((vm:Launcher)DataContext).ActiveGroup" ElementName="ThisControl"/>
+                    </MultiBinding>
+                  </Classes.active>
+                  <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Path Width="10" Height="10"
+                          Margin="0,0,6,0"
+                          VerticalAlignment="Center"
+                          Data="{StaticResource Icons.Bookmark}"
+                          Fill="{Binding Bookmark, Converter={x:Static c:IntConverters.ToBookmarkBrush}}"
+                          IsVisible="{Binding Bookmark, Converter={x:Static c:IntConverters.IsGreaterThanZero}}"/>
+                    <TextBlock Text="{Binding Name}" FontSize="12" VerticalAlignment="Center"/>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <Button Classes="icon_button"
+                  Width="22" Height="22"
+                  Margin="2,0,0,4"
+                  VerticalAlignment="Bottom"
+                  ToolTip.Tip="{DynamicResource Text.Welcome.NewGroup}"
+                  Click="OnAddGroup">
+            <Path Width="10" Height="10"
+                  Data="{StaticResource Icons.Plus}"
+                  Fill="{DynamicResource Brush.FG2}"/>
+          </Button>
+        </StackPanel>
       </ScrollViewer>
     </Border>
 
