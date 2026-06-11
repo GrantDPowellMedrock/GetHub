@@ -570,33 +570,7 @@ namespace GetHub.ViewModels
             return FindNodeRecursive(id, RepositoryNodes);
         }
 
-        public RepositoryNode FindGroupRoot(string id)
-        {
-            foreach (var root in RepositoryNodes)
-            {
-                // A repository that contains nested sub-repos also acts as a group.
-                if (!root.IsContainer)
-                    continue;
-
-                if (ContainsRecursive(root, id))
-                    return root;
-            }
-            return null;
-        }
-
-        private bool ContainsRecursive(RepositoryNode node, string id)
-        {
-            if (node.Id == id)
-                return true;
-            foreach (var sub in node.SubNodes)
-            {
-                if (ContainsRecursive(sub, id))
-                    return true;
-            }
-            return false;
-        }
-
-        public RepositoryNode FindOrAddNodeByRepositoryPath(string repo, RepositoryNode parent, bool shouldMoveNode, bool save = true)
+public RepositoryNode FindOrAddNodeByRepositoryPath(string repo, RepositoryNode parent, bool shouldMoveNode, bool save = true)
         {
             var normalized = repo.Replace('\\', '/').TrimEnd('/');
 
@@ -753,6 +727,13 @@ namespace GetHub.ViewModels
                 {
                     workspace.Repositories.Clear();
                     workspace.ActiveIdx = 0;
+                }
+
+                if (workspace.Groups.Count > 0)
+                {
+                    var valid = new HashSet<string>(workspace.Repositories);
+                    foreach (var group in workspace.Groups)
+                        group.RepositoryIds.RemoveAll(id => !valid.Contains(id));
                 }
             }
         }
