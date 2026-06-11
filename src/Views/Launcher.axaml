@@ -132,16 +132,20 @@
     </Grid>
 
     <!-- Group Tab Strip (own row, OUTSIDE the macOS native title bar so drag +
-         right-click work; filters the page tabs below) -->
+         right-click work; filters the page tabs below). Empty space drags the
+         window (PR #4, @shahaanf). -->
     <Border Grid.Row="1"
             Background="{DynamicResource Brush.TitleBar}"
             BorderThickness="0,0,0,1"
             BorderBrush="{DynamicResource Brush.Border0}"
             IsVisible="{Binding Groups.Count, Converter={x:Static c:IntConverters.IsGreaterThanOne}}">
       <ScrollViewer Margin="8,2"
+                    Background="Transparent"
                     HorizontalScrollBarVisibility="Hidden"
-                    VerticalScrollBarVisibility="Disabled">
-        <ItemsControl ItemsSource="{Binding Groups}" Height="30">
+                    VerticalScrollBarVisibility="Disabled"
+                    DoubleTapped="MaximizeFromStrip"
+                    PointerPressed="BeginMoveWindowFromStrip">
+        <ItemsControl ItemsSource="{Binding Groups}" Height="30" VerticalAlignment="Bottom">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
               <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"/>
@@ -153,7 +157,6 @@
                       Margin="0,0,4,0"
                       Padding="10,4"
                       VerticalAlignment="Stretch"
-                      ContextRequested="OnGroupContextRequested"
                       PointerPressed="OnGroupPointerPressed"
                       PointerMoved="OnGroupPointerMoved"
                       PointerReleased="OnGroupPointerReleased"

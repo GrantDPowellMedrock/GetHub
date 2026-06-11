@@ -495,18 +495,40 @@ namespace GetHub.Views
             e.Handled = true;
         }
 
-        private void OnGroupContextRequested(object sender, ContextRequestedEventArgs e)
+        // Drag/maximize the window from the empty space of the group-tab strip.
+        // The strip overlays the title bar; ignore presses that land on a group
+        // tab so tab select/drag still work.
+        private void BeginMoveWindowFromStrip(object sender, PointerPressedEventArgs e)
         {
-            if (sender is Border bd && bd.DataContext is ViewModels.LauncherGroup group &&
-                !group.IsPseudo && DataContext is ViewModels.Launcher vm)
+            if (IsOverGroupTab(e.Source))
+                return;
+            BeginMoveWindow(sender, e);
+        }
+
+        private void MaximizeFromStrip(object sender, TappedEventArgs e)
+        {
+            if (IsOverGroupTab(e.Source))
+                return;
+            MaximizeOrRestoreWindow(sender, e);
+        }
+
+        private static bool IsOverGroupTab(object source)
+        {
+            var v = source as Visual;
+            while (v != null)
             {
-                OpenGroupMenu(bd, group, vm);
+                if (v is Border b && b.Classes.Contains("group_tab"))
+                    return true;
+                v = v.GetVisualParent();
             }
-            e.Handled = true;
+            return false;
         }
 
         private void OpenGroupMenu(Border bd, ViewModels.LauncherGroup group, ViewModels.Launcher vm)
         {
+            // Close any menu already open so repeated right-clicks don't stack up.
+            _openGroupMenu?.Close();
+
             var menu = new ContextMenu();
 
             var openInZed = new MenuItem { Header = "Open all in Zed" };
@@ -553,11 +575,14 @@ namespace GetHub.Views
                 menu.Items.Add(item);
             }
 
+            menu.Closed += (_, _) => { if (ReferenceEquals(_openGroupMenu, menu)) _openGroupMenu = null; };
+            _openGroupMenu = menu;
             menu.Open(bd);
         }
 
         private WindowState _lastWindowState = WindowState.Normal;
         private static readonly DataFormat<string> _dndGroupFormat = DataFormat.CreateStringApplicationFormat("gethub-dnd-group");
+        private ContextMenu _openGroupMenu;
         private bool _pressedGroup;
         private bool _startDragGroup;
         private Point _pressedGroupPosition;
