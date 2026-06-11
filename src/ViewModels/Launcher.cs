@@ -74,7 +74,7 @@ namespace GetHub.ViewModels
             RepositoryNode fromNode = null, toNode = null;
             foreach (var n in roots)
             {
-                if (n.IsRepository) continue;
+                if (!n.IsContainer) continue;
                 if (n.Name == fromName) fromNode = n;
                 else if (n.Name == toName) toNode = n;
             }
@@ -100,7 +100,7 @@ namespace GetHub.ViewModels
 
             foreach (var node in Preferences.Instance.RepositoryNodes)
             {
-                if (!node.IsRepository && node.Name == groupName)
+                if (node.IsContainer && node.Name == groupName)
                 {
                     node.Bookmark = bookmark;
                     break;
@@ -563,7 +563,7 @@ namespace GetHub.ViewModels
             };
             foreach (var node in Preferences.Instance.RepositoryNodes)
             {
-                if (!node.IsRepository && !string.IsNullOrEmpty(node.Name))
+                if (node.IsContainer && !string.IsNullOrEmpty(node.Name))
                     built.Add(new LauncherGroup(node.Name, node.Bookmark, false));
             }
 
@@ -604,7 +604,7 @@ namespace GetHub.ViewModels
             RepositoryNode folder = null;
             foreach (var node in Preferences.Instance.RepositoryNodes)
             {
-                if (!node.IsRepository && node.Name == groupName)
+                if (node.IsContainer && node.Name == groupName)
                 {
                     folder = node;
                     break;
@@ -626,21 +626,24 @@ namespace GetHub.ViewModels
 
         private void OpenRepoDescendants(RepositoryNode node)
         {
-            if (node.IsRepository)
+            if (node.IsRepository && Directory.Exists(node.Id))
             {
-                if (!Directory.Exists(node.Id))
-                    return;
-
+                var alreadyOpen = false;
                 foreach (var page in Pages)
                 {
                     if (page.Node.Id == node.Id)
-                        return;
+                    {
+                        alreadyOpen = true;
+                        break;
+                    }
                 }
 
-                OpenRepositoryInTab(node, null);
-                return;
+                if (!alreadyOpen)
+                    OpenRepositoryInTab(node, null);
             }
 
+            // A repository may itself be a container of nested sub-repos, so keep
+            // descending instead of stopping at the first repository.
             foreach (var sub in node.SubNodes)
                 OpenRepoDescendants(sub);
         }

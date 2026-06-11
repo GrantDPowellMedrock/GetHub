@@ -574,7 +574,8 @@ namespace GetHub.ViewModels
         {
             foreach (var root in RepositoryNodes)
             {
-                if (root.IsRepository)
+                // A repository that contains nested sub-repos also acts as a group.
+                if (!root.IsContainer)
                     continue;
 
                 if (ContainsRecursive(root, id))
