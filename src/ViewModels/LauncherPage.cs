@@ -89,13 +89,8 @@ namespace GetHub.ViewModels
             set => SetProperty(ref _isInActiveGroup, value);
         }
 
-        public string GetGroupName()
-        {
-            if (_node == null || !_node.IsRepository)
-                return Launcher.GroupAll;
-            var group = Preferences.Instance.FindGroupRoot(_node.Id);
-            return group?.Name ?? Launcher.GroupUngrouped;
-        }
+        // Repo path Id of this page, or null for non-repo pages (welcome tab).
+        public string RepoId => _node is { IsRepository: true } ? _node.Id : null;
 
         public AvaloniaList<Models.Notification> Notifications
         {
