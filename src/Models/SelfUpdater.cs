@@ -15,12 +15,12 @@ namespace GetHub.Models
     /// process to exit, copies the new files over the install dir (preserving the
     /// portable <c>data/</c> folder), and relaunches the app.
     ///
-    /// Windows is fully supported. On other platforms callers should fall back to
-    /// opening the releases page in a browser.
+    /// Windows and macOS are supported. On other platforms callers should fall
+    /// back to opening the releases page in a browser.
     /// </summary>
     public static class SelfUpdater
     {
-        public static bool IsSupported => OperatingSystem.IsWindows();
+        public static bool IsSupported => OperatingSystem.IsWindows() || OperatingSystem.IsMacOS();
 
         public static string AssetNameFor(string version)
         {
@@ -110,6 +110,32 @@ namespace GetHub.Models
                 // Release the exe lock so the swapper can overwrite it.
                 Environment.Exit(0);
             }
+            else if (OperatingSystem.IsMacOS())
+            {
+                // exePath = /…/GetHub.app/Contents/MacOS/GetHub  ->  bundle is 3 up.
+                var appBundle = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(exePath)));
+                if (string.IsNullOrEmpty(appBundle) || !appBundle.EndsWith(".app", StringComparison.OrdinalIgnoreCase))
+                    throw new Exception("Could not locate the GetHub.app bundle to update.");
+
+                // mac zip extracts GetHub.app at the root of the extract dir.
+                var newApp = Path.Combine(extractDir, "GetHub.app");
+                if (!Directory.Exists(newApp))
+                    newApp = Path.Combine(newFilesDir, "GetHub.app");
+                if (!Directory.Exists(newApp))
+                    throw new Exception("Downloaded update did not contain GetHub.app.");
+
+                var script = Path.Combine(tmpRoot, "apply_update.sh");
+                File.WriteAllText(script, MacScript);
+
+                var psi = new ProcessStartInfo { FileName = "/bin/bash", UseShellExecute = false };
+                psi.ArgumentList.Add(script);
+                psi.ArgumentList.Add(pid.ToString());
+                psi.ArgumentList.Add(newApp);
+                psi.ArgumentList.Add(appBundle);
+                Process.Start(psi);
+
+                Environment.Exit(0);
+            }
         }
 
         // Waits for the app to exit, copies new files over the install dir while
@@ -126,6 +152,26 @@ Start-Sleep -Milliseconds 800
 robocopy $Src $Dst /E /XD data /R:5 /W:1 | Out-Null
 Start-Sleep -Milliseconds 300
 Start-Process -FilePath $Exe
+";
+
+        // Waits for the app to quit, swaps the whole .app bundle, clears the
+        // quarantine flag (so Gatekeeper allows it), ensures the binary is
+        // executable, then relaunches. macOS prefs live in
+        // ~/Library/Application Support/GetHub, outside the bundle, so they survive.
+        private const string MacScript = @"#!/bin/bash
+APP_PID=""$1""
+NEW_APP=""$2""
+DST_APP=""$3""
+for i in $(seq 1 100); do
+  kill -0 ""$APP_PID"" 2>/dev/null || break
+  sleep 0.3
+done
+sleep 0.5
+rm -rf ""$DST_APP""
+mv ""$NEW_APP"" ""$DST_APP""
+xattr -cr ""$DST_APP"" 2>/dev/null || true
+chmod +x ""$DST_APP/Contents/MacOS/GetHub"" 2>/dev/null || true
+open ""$DST_APP""
 ";
     }
 }
