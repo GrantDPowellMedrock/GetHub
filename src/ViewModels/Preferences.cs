@@ -570,7 +570,7 @@ namespace GetHub.ViewModels
             return FindNodeRecursive(id, RepositoryNodes);
         }
 
-public RepositoryNode FindOrAddNodeByRepositoryPath(string repo, RepositoryNode parent, bool shouldMoveNode, bool save = true)
+        public RepositoryNode FindOrAddNodeByRepositoryPath(string repo, RepositoryNode parent, bool shouldMoveNode, bool save = true)
         {
             var normalized = repo.Replace('\\', '/').TrimEnd('/');
 
