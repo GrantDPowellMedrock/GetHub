@@ -729,7 +729,10 @@ namespace GetHub.ViewModels
                     workspace.ActiveIdx = 0;
                 }
 
-                if (workspace.Groups.Count > 0)
+                // Only prune against a populated repo set. A non-restore workspace
+                // has just had Repositories cleared above; pruning there would wipe
+                // its group membership on every startup.
+                if (workspace.RestoreOnStartup && workspace.Groups.Count > 0)
                 {
                     var valid = new HashSet<string>(workspace.Repositories);
                     foreach (var group in workspace.Groups)
