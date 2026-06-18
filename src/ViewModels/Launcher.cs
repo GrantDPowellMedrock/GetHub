@@ -720,6 +720,12 @@ namespace GetHub.ViewModels
 
         public void RefreshGroups()
         {
+            // Fired via Pages.CollectionChanged, which can run from AddNewTab() in
+            // the constructor BEFORE ActiveWorkspace is assigned. Bail out safely;
+            // it runs again once repos open with the workspace set.
+            if (_activeWorkspace == null)
+                return;
+
             var built = new System.Collections.Generic.List<LauncherGroup>
             {
                 new LauncherGroup(GroupAll, 0, true)
