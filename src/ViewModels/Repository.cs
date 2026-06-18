@@ -1899,14 +1899,33 @@ namespace GetHub.ViewModels
                 if (remotes.Count == 0)
                     return;
 
-                IsAutoFetching = true;
-                log = CreateLog("Auto-Fetch");
+                // Serialize auto-fetch across ALL open repositories. Without this,
+                // opening many repos at once (e.g. a group) makes every repo fetch
+                // simultaneously; if the git credential isn't cached yet, each fetch
+                // pops its own auth prompt — a storm of dozens of prompts. With the
+                // gate only one repo fetches at a time, so a missing credential is
+                // entered ONCE and the credential manager caches it for the rest.
+                // If the gate is busy, skip this tick; the 5s timer retries.
+                if (!await _autoFetchGate.WaitAsync(0))
+                    return;
 
-                foreach (var remote in remotes)
-                    await new Commands.Fetch(FullPath, remote).Use(log).RunAsync();
+                try
+                {
+                    IsAutoFetching = true;
+                    log = CreateLog("Auto-Fetch");
 
-                _lastFetchTime = DateTime.Now;
-                IsAutoFetching = false;
+                    foreach (var remote in remotes)
+                        await new Commands.Fetch(FullPath, remote).Use(log).RunAsync();
+                }
+                finally
+                {
+                    // Always advance the clock and clear the flag, even on failure,
+                    // so a failed auth waits the full interval instead of retrying
+                    // every 5 seconds.
+                    _lastFetchTime = DateTime.Now;
+                    IsAutoFetching = false;
+                    _autoFetchGate.Release();
+                }
             }
             catch
             {
@@ -1952,6 +1971,11 @@ namespace GetHub.ViewModels
         private bool _isAutoFetching = false;
         private Timer _autoFetchTimer = null;
         private DateTime _lastFetchTime = DateTime.MinValue;
+
+        // Global gate: only one repository auto-fetches at a time, so a missing
+        // git credential prompts once (and gets cached) instead of every open repo
+        // prompting at once.
+        private static readonly SemaphoreSlim _autoFetchGate = new SemaphoreSlim(1, 1);
 
         private Models.BisectState _bisectState = Models.BisectState.None;
         private bool _isBisectCommandRunning = false;
