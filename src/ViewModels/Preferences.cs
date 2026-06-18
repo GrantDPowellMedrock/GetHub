@@ -26,10 +26,19 @@ namespace GetHub.ViewModels
                 _instance.PrepareShellOrTerminal();
                 _instance.PrepareExternalDiffMergeTool();
                 _instance.PrepareWorkspaces();
+                // NOTE: group seeding (SeedWorkspaceGroupsFromTree) runs from the
+                // Launcher constructor instead — Preferences is still read-only here
+                // (SetCanModify() hasn't run), so a Save() would be a no-op.
 
                 return _instance;
             }
         }
+
+        // One-time flag: seed each existing workspace's groups from the sidebar
+        // folder tree the first time this version runs, so users who organized
+        // repos into folders keep those as per-workspace groups. New workspaces
+        // created afterwards start empty (groups are defined per workspace).
+        public bool GroupsSeededFromTree { get; set; } = false;
 
         public string Locale
         {
@@ -570,32 +579,6 @@ namespace GetHub.ViewModels
             return FindNodeRecursive(id, RepositoryNodes);
         }
 
-        public RepositoryNode FindGroupRoot(string id)
-        {
-            foreach (var root in RepositoryNodes)
-            {
-                // A repository that contains nested sub-repos also acts as a group.
-                if (!root.IsContainer)
-                    continue;
-
-                if (ContainsRecursive(root, id))
-                    return root;
-            }
-            return null;
-        }
-
-        private bool ContainsRecursive(RepositoryNode node, string id)
-        {
-            if (node.Id == id)
-                return true;
-            foreach (var sub in node.SubNodes)
-            {
-                if (ContainsRecursive(sub, id))
-                    return true;
-            }
-            return false;
-        }
-
         public RepositoryNode FindOrAddNodeByRepositoryPath(string repo, RepositoryNode parent, bool shouldMoveNode, bool save = true)
         {
             var normalized = repo.Replace('\\', '/').TrimEnd('/');
@@ -739,6 +722,66 @@ namespace GetHub.ViewModels
             }
         }
 
+        // One-time migration: turn the user's top-level sidebar folders into
+        // per-workspace groups (members = that folder's repos that live in the
+        // workspace). Keeps any group the user already has; runs exactly once.
+        public void SeedWorkspaceGroupsFromTree()
+        {
+            if (GroupsSeededFromTree)
+                return;
+            GroupsSeededFromTree = true;
+
+            // Build one folder -> repo-ids map from the global sidebar tree.
+            var folderGroups = new List<(string Name, int Bookmark, List<string> Ids)>();
+            foreach (var node in RepositoryNodes)
+            {
+                if (node.IsRepository || string.IsNullOrEmpty(node.Name))
+                    continue;
+
+                var ids = new List<string>();
+                CollectRepoIds(node, ids);
+                if (ids.Count > 0)
+                    folderGroups.Add((node.Name, node.Bookmark, ids));
+            }
+
+            if (folderGroups.Count > 0)
+            {
+                foreach (var ws in Workspaces)
+                {
+                    var existing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    foreach (var g in ws.Groups)
+                        existing.Add(g.Name);
+
+                    foreach (var fg in folderGroups)
+                    {
+                        if (existing.Contains(fg.Name))
+                            continue;
+                        ws.Groups.Add(new WorkspaceGroup
+                        {
+                            Name = fg.Name,
+                            Bookmark = fg.Bookmark,
+                            RepositoryIds = new List<string>(fg.Ids),
+                        });
+                    }
+                }
+            }
+
+            Save();
+        }
+
+        private void CollectRepoIds(RepositoryNode node, List<string> ids)
+        {
+            if (node.IsRepository)
+            {
+                if (!ids.Contains(node.Id))
+                    ids.Add(node.Id);
+                return;
+            }
+
+            foreach (var sub in node.SubNodes)
+                CollectRepoIds(sub, ids);
+        }
+
         private void PrepareWorkspaces()
         {
             if (Workspaces.Count == 0)
@@ -753,6 +796,16 @@ namespace GetHub.ViewModels
                 {
                     workspace.Repositories.Clear();
                     workspace.ActiveIdx = 0;
+                }
+
+                // Only prune against a populated repo set. A non-restore workspace
+                // has just had Repositories cleared above; pruning there would wipe
+                // its group membership on every startup.
+                if (workspace.RestoreOnStartup && workspace.Groups.Count > 0)
+                {
+                    var valid = new HashSet<string>(workspace.Repositories);
+                    foreach (var group in workspace.Groups)
+                        group.RepositoryIds.RemoveAll(id => !valid.Contains(id));
                 }
             }
         }

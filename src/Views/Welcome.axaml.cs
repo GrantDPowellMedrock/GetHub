@@ -107,6 +107,20 @@ namespace GetHub.Views
             {
                 var menu = new ContextMenu();
 
+                if (node.IsContainer && node.SubNodes.Count > 0)
+                {
+                    var openAsGroup = new MenuItem();
+                    openAsGroup.Header = App.Text("Welcome.OpenAsGroup");
+                    openAsGroup.Icon = this.CreateMenuIcon("Icons.Folder.Open");
+                    openAsGroup.Click += (_, e) =>
+                    {
+                        App.GetLauncher()?.OpenAsGroup(node);
+                        e.Handled = true;
+                    };
+                    menu.Items.Add(openAsGroup);
+                    menu.Items.Add(new MenuItem() { Header = "-" });
+                }
+
                 if (!node.IsRepository && node.SubNodes.Count > 0)
                 {
                     var openAll = new MenuItem();
