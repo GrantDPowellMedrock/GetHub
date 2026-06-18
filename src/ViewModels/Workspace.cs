@@ -28,12 +28,6 @@ namespace GetHub.ViewModels
             set;
         } = new List<string>();
 
-        public List<WorkspaceGroup> Groups
-        {
-            get;
-            set;
-        } = [];
-
         public int ActiveIdx
         {
             get;

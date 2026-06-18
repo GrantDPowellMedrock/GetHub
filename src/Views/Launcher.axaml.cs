@@ -480,32 +480,16 @@ namespace GetHub.Views
             e.Handled = true;
         }
 
-        private void OnGroupDragOver(object sender, DragEventArgs e)
-        {
-            if (sender is Border { DataContext: ViewModels.LauncherGroup to } && !to.IsPseudo &&
-                (e.DataTransfer.Contains(_dndGroupFormat) || e.DataTransfer.Contains(_dndMainTabFormat)))
-                e.DragEffects = DragDropEffects.Move;
-            else
-                e.DragEffects = DragDropEffects.None;
-            e.Handled = true;
-        }
-
         private void OnGroupDrop(object sender, DragEventArgs e)
         {
+            if (e.DataTransfer.TryGetValue(_dndGroupFormat) is not { Length: > 0 } fromName)
+                return;
             if (sender is not Border bd || bd.DataContext is not ViewModels.LauncherGroup to || to.IsPseudo)
                 return;
             if (DataContext is not ViewModels.Launcher vm)
                 return;
 
-            if (e.DataTransfer.TryGetValue(_dndGroupFormat) is { Length: > 0 } fromName)
-            {
-                vm.MoveGroup(fromName, to.Name);
-            }
-            else if (e.DataTransfer.TryGetValue(_dndMainTabFormat) is { Length: > 0 } repoId)
-            {
-                vm.AddRepoToGroup(to.Name, repoId);
-            }
-
+            vm.MoveGroup(fromName, to.Name);
             _pressedGroup = false;
             _startDragGroup = false;
             e.Handled = true;
@@ -591,97 +575,13 @@ namespace GetHub.Views
                 menu.Items.Add(item);
             }
 
-            menu.Items.Add(new MenuItem { Header = "-" });
-
-            var rename = new MenuItem { Header = App.Text("Welcome.RenameGroup") };
-            rename.Click += (_, ev) =>
-            {
-                ShowRenameGroupFlyout(bd, group.Name);
-                ev.Handled = true;
-            };
-            menu.Items.Add(rename);
-
-            var delete = new MenuItem { Header = App.Text("Welcome.DeleteGroup") };
-            delete.Click += (_, ev) =>
-            {
-                vm.DeleteGroup(group.Name);
-                ev.Handled = true;
-            };
-            menu.Items.Add(delete);
-
             menu.Closed += (_, _) => { if (ReferenceEquals(_openGroupMenu, menu)) _openGroupMenu = null; };
             _openGroupMenu = menu;
             menu.Open(bd);
         }
 
-        private void OnAddGroup(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            if (sender is not Control anchor || DataContext is not ViewModels.Launcher vm)
-                return;
-
-            var box = new TextBox
-            {
-                Width = 180,
-                Watermark = App.Text("Welcome.NewGroup"),
-            };
-            var flyout = new Flyout
-            {
-                Content = box,
-                Placement = PlacementMode.Bottom,
-            };
-
-            box.KeyDown += (_, ke) =>
-            {
-                if (ke.Key == Avalonia.Input.Key.Enter)
-                {
-                    vm.CreateGroup(box.Text);
-                    flyout.Hide();
-                    ke.Handled = true;
-                }
-                else if (ke.Key == Avalonia.Input.Key.Escape)
-                {
-                    flyout.Hide();
-                    ke.Handled = true;
-                }
-            };
-
-            flyout.ShowAt(anchor);
-            box.Focus();
-        }
-
-        private void ShowRenameGroupFlyout(Control anchor, string oldName)
-        {
-            if (DataContext is not ViewModels.Launcher vm)
-                return;
-
-            var box = new TextBox { Width = 180, Text = oldName };
-            var flyout = new Flyout
-            {
-                Content = box,
-                Placement = PlacementMode.Bottom,
-            };
-            box.KeyDown += (_, ke) =>
-            {
-                if (ke.Key == Avalonia.Input.Key.Enter)
-                {
-                    vm.RenameGroup(oldName, box.Text);
-                    flyout.Hide();
-                    ke.Handled = true;
-                }
-                else if (ke.Key == Avalonia.Input.Key.Escape)
-                {
-                    flyout.Hide();
-                    ke.Handled = true;
-                }
-            };
-            flyout.ShowAt(anchor);
-            box.Focus();
-            box.SelectAll();
-        }
-
         private WindowState _lastWindowState = WindowState.Normal;
         private static readonly DataFormat<string> _dndGroupFormat = DataFormat.CreateStringApplicationFormat("gethub-dnd-group");
-        private readonly DataFormat<string> _dndMainTabFormat = DataFormat.CreateStringApplicationFormat("gethub-dnd-main-tab");
         private ContextMenu _openGroupMenu;
         private bool _pressedGroup;
         private bool _startDragGroup;

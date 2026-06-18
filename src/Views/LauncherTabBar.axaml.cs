@@ -411,35 +411,6 @@ namespace GetHub.Views
                     ev.Handled = true;
                 };
                 menu.Items.Add(closeRight);
-
-                if (page.Node is { IsRepository: true } && vm.ActiveWorkspace.Groups.Count > 0)
-                {
-                    menu.Items.Add(new MenuItem() { Header = "-" });
-
-                    var addTo = new MenuItem();
-                    addTo.Header = App.Text("Welcome.AddToGroup");
-                    addTo.Icon = this.CreateMenuIcon("Icons.Folder.Add");
-                    foreach (var g in vm.ActiveWorkspace.Groups)
-                    {
-                        var gname = g.Name;
-                        var gi = new MenuItem() { Header = gname };
-                        gi.Click += (_, ev) => { vm.AddRepoToGroup(gname, page.Node.Id); ev.Handled = true; };
-                        addTo.Items.Add(gi);
-                    }
-                    menu.Items.Add(addTo);
-
-                    var removeFrom = new MenuItem();
-                    removeFrom.Header = App.Text("Welcome.RemoveFromGroup");
-                    foreach (var g in vm.ActiveWorkspace.Groups)
-                    {
-                        var gname = g.Name;
-                        var gi = new MenuItem() { Header = gname };
-                        gi.Click += (_, ev) => { vm.RemoveRepoFromGroup(gname, page.Node.Id); ev.Handled = true; };
-                        removeFrom.Items.Add(gi);
-                    }
-                    menu.Items.Add(removeFrom);
-                }
-
                 menu.Open(border);
             }
 

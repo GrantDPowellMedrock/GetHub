@@ -13,6 +13,7 @@ namespace GetHub.ViewModels
     public class Launcher : ObservableObject
     {
         public const string GroupAll = "All";
+        public const string GroupUngrouped = "Ungrouped";
 
         private static readonly string AppVersion = GetAppVersion();
 
@@ -66,22 +67,27 @@ namespace GetHub.ViewModels
         {
             if (string.IsNullOrEmpty(fromName) || string.IsNullOrEmpty(toName) || fromName == toName)
                 return;
-            if (fromName == GroupAll || toName == GroupAll)
+            if (fromName == GroupAll || fromName == GroupUngrouped || toName == GroupAll || toName == GroupUngrouped)
                 return;
 
-            var list = _activeWorkspace.Groups;
-            int fromIdx = -1, toIdx = -1;
-            for (int i = 0; i < list.Count; i++)
+            var roots = Preferences.Instance.RepositoryNodes;
+            RepositoryNode fromNode = null, toNode = null;
+            foreach (var n in roots)
             {
-                if (list[i].Name == fromName) fromIdx = i;
-                else if (list[i].Name == toName) toIdx = i;
+                if (!n.IsContainer) continue;
+                if (n.Name == fromName) fromNode = n;
+                else if (n.Name == toName) toNode = n;
             }
+            if (fromNode == null || toNode == null)
+                return;
+
+            var fromIdx = roots.IndexOf(fromNode);
+            var toIdx = roots.IndexOf(toNode);
             if (fromIdx < 0 || toIdx < 0)
                 return;
 
-            var moved = list[fromIdx];
-            list.RemoveAt(fromIdx);
-            list.Insert(toIdx, moved);
+            roots.RemoveAt(fromIdx);
+            roots.Insert(toIdx, fromNode);
 
             Preferences.Instance.Save();
             RefreshGroups();
@@ -89,14 +95,14 @@ namespace GetHub.ViewModels
 
         public void SetGroupColor(string groupName, int bookmark)
         {
-            if (string.IsNullOrEmpty(groupName) || groupName == GroupAll)
+            if (string.IsNullOrEmpty(groupName) || groupName == GroupAll || groupName == GroupUngrouped)
                 return;
 
-            foreach (var g in _activeWorkspace.Groups)
+            foreach (var node in Preferences.Instance.RepositoryNodes)
             {
-                if (g.Name == groupName)
+                if (node.IsContainer && node.Name == groupName)
                 {
-                    g.Bookmark = bookmark;
+                    node.Bookmark = bookmark;
                     break;
                 }
             }
@@ -109,160 +115,6 @@ namespace GetHub.ViewModels
                 }
             }
             Preferences.Instance.Save();
-        }
-
-        public bool CreateGroup(string name)
-        {
-            name = name?.Trim();
-            if (string.IsNullOrEmpty(name) || string.Equals(name, GroupAll, StringComparison.OrdinalIgnoreCase))
-                return false;
-
-            foreach (var g in _activeWorkspace.Groups)
-            {
-                if (string.Equals(g.Name, name, StringComparison.OrdinalIgnoreCase))
-                    return false;
-            }
-
-            _activeWorkspace.Groups.Add(new WorkspaceGroup { Name = name });
-            Preferences.Instance.Save();
-            RefreshGroups();
-            return true;
-        }
-
-        public bool RenameGroup(string oldName, string newName)
-        {
-            newName = newName?.Trim();
-            if (string.IsNullOrEmpty(newName) || string.Equals(newName, GroupAll, StringComparison.OrdinalIgnoreCase))
-                return false;
-
-            WorkspaceGroup target = null;
-            foreach (var g in _activeWorkspace.Groups)
-            {
-                if (!string.Equals(g.Name, oldName, StringComparison.OrdinalIgnoreCase) &&
-                    string.Equals(g.Name, newName, StringComparison.OrdinalIgnoreCase))
-                    return false;
-                if (g.Name == oldName)
-                    target = g;
-            }
-            if (target == null)
-                return false;
-
-            var wasActive = _activeGroup == oldName;
-            target.Name = newName;
-            if (wasActive)
-                _activeGroup = newName;
-
-            Preferences.Instance.Save();
-            RefreshGroups();
-            return true;
-        }
-
-        public void DeleteGroup(string name)
-        {
-            if (string.IsNullOrEmpty(name) || name == GroupAll)
-                return;
-
-            _activeWorkspace.Groups.RemoveAll(g => g.Name == name);
-            if (_activeGroup == name)
-                _activeGroup = GroupAll;
-
-            Preferences.Instance.Save();
-            RefreshGroups();
-        }
-
-        public void AddRepoToGroup(string groupName, string repoId)
-        {
-            if (string.IsNullOrEmpty(groupName) || string.IsNullOrEmpty(repoId) || groupName == GroupAll)
-                return;
-            if (!_activeWorkspace.Repositories.Contains(repoId))
-                return;
-
-            foreach (var g in _activeWorkspace.Groups)
-            {
-                if (g.Name == groupName)
-                {
-                    if (!g.RepositoryIds.Contains(repoId))
-                        g.RepositoryIds.Add(repoId);
-                    break;
-                }
-            }
-
-            Preferences.Instance.Save();
-            ApplyGroupFilter();
-        }
-
-        public void RemoveRepoFromGroup(string groupName, string repoId)
-        {
-            if (string.IsNullOrEmpty(groupName) || string.IsNullOrEmpty(repoId))
-                return;
-
-            foreach (var g in _activeWorkspace.Groups)
-            {
-                if (g.Name == groupName)
-                {
-                    g.RepositoryIds.Remove(repoId);
-                    break;
-                }
-            }
-
-            Preferences.Instance.Save();
-            ApplyGroupFilter();
-        }
-
-        public void OpenAsGroup(RepositoryNode node)
-        {
-            if (node == null)
-                return;
-
-            var ids = new System.Collections.Generic.List<string>();
-            CollectDescendantRepoIds(node, ids);
-            if (ids.Count == 0)
-                return;
-
-            _ignoreIndexChange = true;
-            try
-            {
-                foreach (var id in ids)
-                    OpenRepositoryById(id);
-            }
-            finally
-            {
-                _ignoreIndexChange = false;
-            }
-
-            WorkspaceGroup group = null;
-            foreach (var g in _activeWorkspace.Groups)
-            {
-                if (string.Equals(g.Name, node.Name, StringComparison.OrdinalIgnoreCase))
-                {
-                    group = g;
-                    break;
-                }
-            }
-            if (group == null)
-            {
-                group = new WorkspaceGroup { Name = node.Name };
-                _activeWorkspace.Groups.Add(group);
-            }
-
-            foreach (var id in ids)
-            {
-                if (_activeWorkspace.Repositories.Contains(id) && !group.RepositoryIds.Contains(id))
-                    group.RepositoryIds.Add(id);
-            }
-
-            Preferences.Instance.Save();
-            RefreshGroups();
-            ActiveGroup = group.Name;
-        }
-
-        private void CollectDescendantRepoIds(RepositoryNode node, System.Collections.Generic.List<string> outIds)
-        {
-            if (node.IsRepository && !outIds.Contains(node.Id))
-                outIds.Add(node.Id);
-
-            foreach (var sub in node.SubNodes)
-                CollectDescendantRepoIds(sub, outIds);
         }
 
         public string ActiveGroup
@@ -374,7 +226,6 @@ namespace GetHub.ViewModels
 
             ActiveWorkspace = to;
             to.IsActive = true;
-            _activeGroup = GroupAll;
 
             foreach (var one in Pages)
                 CloseRepositoryInTab(one, false);
@@ -406,7 +257,6 @@ namespace GetHub.ViewModels
             _ignoreIndexChange = false;
             PostActivePageChanged();
             Preferences.Instance.Save();
-            RefreshGroups();
             GC.Collect();
         }
 
@@ -668,11 +518,7 @@ namespace GetHub.ViewModels
             if (page.Data is Repository repo)
             {
                 if (removeFromWorkspace)
-                {
                     _activeWorkspace.Repositories.Remove(repo.FullPath);
-                    foreach (var g in _activeWorkspace.Groups)
-                        g.RepositoryIds.Remove(repo.FullPath);
-                }
 
                 repo.Close();
             }
@@ -703,35 +549,32 @@ namespace GetHub.ViewModels
 
             if (_activeGroup != GroupAll && _activePage != null)
             {
-                var rid = _activePage.RepoId;
-                var inGroup = false;
-                foreach (var g in _activeWorkspace.Groups)
-                {
-                    if (g.Name == _activeGroup && rid != null && g.RepositoryIds.Contains(rid))
-                    {
-                        inGroup = true;
-                        break;
-                    }
-                }
-                if (!inGroup)
-                    ActiveGroup = GroupAll;
+                var pageGroup = _activePage.GetGroupName();
+                if (pageGroup != _activeGroup)
+                    ActiveGroup = pageGroup;
             }
         }
 
         public void RefreshGroups()
         {
-            // Fired via Pages.CollectionChanged, which can run from AddNewTab() in
-            // the constructor BEFORE ActiveWorkspace is assigned. Bail out safely;
-            // it runs again once repos open with the workspace set.
-            if (_activeWorkspace == null)
-                return;
-
             var built = new System.Collections.Generic.List<LauncherGroup>
             {
                 new LauncherGroup(GroupAll, 0, true)
             };
-            foreach (var g in _activeWorkspace.Groups)
-                built.Add(new LauncherGroup(g.Name, g.Bookmark, false));
+            foreach (var node in Preferences.Instance.RepositoryNodes)
+            {
+                if (node.IsContainer && !string.IsNullOrEmpty(node.Name))
+                    built.Add(new LauncherGroup(node.Name, node.Bookmark, false));
+            }
+
+            foreach (var page in Pages)
+            {
+                if (page.GetGroupName() == GroupUngrouped)
+                {
+                    built.Add(new LauncherGroup(GroupUngrouped, 0, true));
+                    break;
+                }
+            }
 
             Groups.Clear();
             foreach (var g in built)
@@ -749,49 +592,31 @@ namespace GetHub.ViewModels
         private void ApplyGroupFilter()
         {
             var all = _activeGroup == GroupAll;
-
-            WorkspaceGroup group = null;
-            if (!all)
-            {
-                foreach (var g in _activeWorkspace.Groups)
-                {
-                    if (g.Name == _activeGroup)
-                    {
-                        group = g;
-                        break;
-                    }
-                }
-            }
-
             foreach (var page in Pages)
-            {
-                var rid = page.RepoId;
-                page.IsInActiveGroup = all || (rid != null && group != null && group.RepositoryIds.Contains(rid));
-            }
+                page.IsInActiveGroup = all || page.GetGroupName() == _activeGroup;
         }
 
         private void OpenGroupRepositories(string groupName)
         {
-            if (string.IsNullOrEmpty(groupName) || groupName == GroupAll)
+            if (string.IsNullOrEmpty(groupName) || groupName == GroupAll || groupName == GroupUngrouped)
                 return;
 
-            WorkspaceGroup group = null;
-            foreach (var g in _activeWorkspace.Groups)
+            RepositoryNode folder = null;
+            foreach (var node in Preferences.Instance.RepositoryNodes)
             {
-                if (g.Name == groupName)
+                if (node.IsContainer && node.Name == groupName)
                 {
-                    group = g;
+                    folder = node;
                     break;
                 }
             }
-            if (group == null)
+            if (folder == null)
                 return;
 
             _ignoreIndexChange = true;
             try
             {
-                foreach (var id in group.RepositoryIds.ToArray())
-                    OpenRepositoryById(id);
+                OpenRepoDescendants(folder);
             }
             finally
             {
@@ -799,27 +624,28 @@ namespace GetHub.ViewModels
             }
         }
 
-        private void OpenRepositoryById(string id)
+        private void OpenRepoDescendants(RepositoryNode node)
         {
-            if (string.IsNullOrEmpty(id) || !Directory.Exists(id))
-                return;
-
-            foreach (var p in Pages)
+            if (node.IsRepository && Directory.Exists(node.Id))
             {
-                if (p.Node.Id == id)
-                    return;
+                var alreadyOpen = false;
+                foreach (var page in Pages)
+                {
+                    if (page.Node.Id == node.Id)
+                    {
+                        alreadyOpen = true;
+                        break;
+                    }
+                }
+
+                if (!alreadyOpen)
+                    OpenRepositoryInTab(node, null);
             }
 
-            var node = Preferences.Instance.FindNode(id) ??
-                new RepositoryNode
-                {
-                    Id = id,
-                    Name = Path.GetFileName(id),
-                    Bookmark = 0,
-                    IsRepository = true,
-                };
-
-            OpenRepositoryInTab(node, null);
+            // A repository may itself be a container of nested sub-repos, so keep
+            // descending instead of stopping at the first repository.
+            foreach (var sub in node.SubNodes)
+                OpenRepoDescendants(sub);
         }
 
         public void OpenGroupInZed(string groupName)
@@ -831,30 +657,37 @@ namespace GetHub.ViewModels
                 return;
             }
 
-            WorkspaceGroup group = null;
-            foreach (var g in _activeWorkspace.Groups)
+            RepositoryNode folder = null;
+            foreach (var node in Preferences.Instance.RepositoryNodes)
             {
-                if (g.Name == groupName)
+                if (!node.IsRepository && node.Name == groupName)
                 {
-                    group = g;
+                    folder = node;
                     break;
                 }
             }
-            if (group == null)
+            if (folder == null)
                 return;
 
             var paths = new System.Collections.Generic.List<string>();
-            foreach (var id in group.RepositoryIds)
-            {
-                if (Directory.Exists(id) && !paths.Contains(id))
-                    paths.Add(id);
-            }
+            CollectRepoPaths(folder, paths);
             if (paths.Count == 0)
                 return;
 
             // Open ONE Zed window with every repo added as a workspace root folder.
             var args = string.Join(" ", paths.ConvertAll(p => p.Quoted()));
             zed.Launch(args);
+        }
+
+        private void CollectRepoPaths(RepositoryNode node, System.Collections.Generic.List<string> paths)
+        {
+            // A repository may itself be a container of nested sub-repos, so add
+            // the repo AND keep descending instead of stopping at the first one.
+            if (node.IsRepository && Directory.Exists(node.Id) && !paths.Contains(node.Id))
+                paths.Add(node.Id);
+
+            foreach (var sub in node.SubNodes)
+                CollectRepoPaths(sub, paths);
         }
 
         private Workspace _activeWorkspace;
